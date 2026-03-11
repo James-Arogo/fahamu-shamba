@@ -1,0 +1,42 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#BFE7C9"/>
+      <stop offset="100%" stop-color="#7BC48B"/>
+    </linearGradient>
+    <linearGradient id="fieldA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6BB65F"/>
+      <stop offset="100%" stop-color="#4D9B4A"/>
+    </linearGradient>
+    <linearGradient id="fieldB" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8ACB5A"/>
+      <stop offset="100%" stop-color="#62A945"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1290" cy="170" r="78" fill="#FFE48A" opacity="0.85"/>
+
+  <path d="M0 540 C200 470 360 600 560 540 C760 480 960 620 1160 550 C1360 480 1480 560 1600 530V900H0V540Z" fill="#3D8656"/>
+  <path d="M0 610 C220 560 430 700 680 620 C920 545 1140 695 1370 620 C1490 580 1550 610 1600 600V900H0V610Z" fill="url(#fieldA)"/>
+  <path d="M0 700 C210 650 370 760 590 700 C820 640 1020 770 1260 700 C1430 650 1510 690 1600 670V900H0V700Z" fill="url(#fieldB)"/>
+
+  <g opacity="0.34" stroke="#E8FFD5" stroke-width="3">
+    <path d="M40 758 C220 694 440 796 650 745 C850 694 1060 786 1260 737 C1410 700 1510 731 1560 722"/>
+    <path d="M20 803 C220 734 430 844 640 793 C850 744 1060 841 1268 787 C1420 749 1520 783 1584 774"/>
+  </g>
+
+  <g fill="#A5D65D" opacity="0.88">
+    <path d="M310 740 C308 714 316 700 334 681 C325 704 323 719 327 741H310Z"/>
+    <path d="M346 743 C344 714 352 700 372 680 C362 704 359 721 363 743H346Z"/>
+    <path d="M382 747 C380 716 388 702 408 682 C398 707 395 724 399 747H382Z"/>
+
+    <path d="M812 714 C810 686 819 671 838 654 C830 677 827 692 829 714H812Z"/>
+    <path d="M848 717 C846 686 854 672 874 654 C864 679 861 695 865 717H848Z"/>
+    <path d="M884 721 C882 688 891 673 910 657 C901 680 897 699 901 721H884Z"/>
+
+    <path d="M1252 752 C1249 722 1259 706 1278 690 C1268 715 1266 731 1269 752H1252Z"/>
+    <path d="M1288 755 C1286 723 1294 708 1314 690 C1304 716 1301 734 1305 755H1288Z"/>
+    <path d="M1324 759 C1322 726 1331 711 1350 693 C1341 717 1337 736 1341 759H1324Z"/>
+  </g>
+</svg>

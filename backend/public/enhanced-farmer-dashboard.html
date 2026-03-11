@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahamu Shamba - Enhanced Farmer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1f6a48;
+            --primary-light: #2d8659;
+            --primary-dark: #155338;
+            --secondary: #f0b429;
+            --success: #166534;
+            --warning: #ff9800;
+            --danger: #b42318;
+            --info: #0288d1;
+            --light-bg: #eef3ef;
+            --card-bg: #ffffff;
+            --text-dark: #17281f;
+            --text-light: #5e6f66;
+            --border: #d9e4dd;
+            --shadow: 0 10px 30px rgba(23, 40, 31, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--light-bg), #f5f5f5);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(130deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 30px 28px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .language-selector select option {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        /* ===== LAYOUT ===== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== STEP FORM ===== */
+        .form-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-title i {
+            font-size: 1.6rem;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 8px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 8px rgba(31, 106, 72, 0.1);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .step.completed .step-number::after {
+            content: '✓';
+            position: absolute;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Form Steps */
+        .form-steps {
+            position: relative;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-step h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .form-step p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition);
+            color: var(--text-dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(31, 106, 72, 0.02);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-light);
+        }
+
+        /* Validation Hints */
+        .validation-hint {
+            display: none;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .validation-hint.info {
+            background: rgba(2, 136, 209, 0.1);
+            color: var(--info);
+            display: flex;
+        }
+
+        .validation-hint.success {
+            background: rgba(22, 101, 52, 0.1);
+            color: var(--success);
+            display: flex;
+        }
+
+        .validation-hint.error {
+            background: rgba(180, 35, 24, 0.1);
+            color: var(--danger);
+            display: flex;
+        }
+
+        /* Radio/Checkbox Groups */
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(31, 106, 72, 0.05);
+        }
+
+        .option-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Range Slider */
+        .range-slider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .range-slider input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(31, 106, 72, 0.3);
+        }
+
+        .range-slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .range-value {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Form Navigation */
+        .form-navigation {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 106, 72, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background: #c9d8d0;
+        }
+
+        /* ===== RECOMMENDATION RESULTS ===== */
+        .results-container {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .results-container.show {
+            display: block;
+        }
+
+        .recommendation-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--primary);
+        }
+
+        .crop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .crop-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .confidence-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .confidence-score {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .confidence-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Rationale Section */
+        .rationale-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rationale-item {
+            padding: 12px 16px;
+            background: rgba(31, 106, 72, 0.05);
+            border-left: 3px solid var(--primary);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .rationale-item strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .rationale-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Risks Section */
+        .risks-section .risk-item {
+            padding: 12px 16px;
+            background: rgba(255, 152, 0, 0.05);
+            border-left: 3px solid var(--warning);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .risk-item strong {
+            color: var(--warning);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* Inputs Section */
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .input-card {
+            padding: 14px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .input-card .category {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .input-card .item {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .input-card .dosage {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* ===== WHAT-IF SIMULATOR ===== */
+        .simulation-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .simulation-container h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .simulation-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .simulation-tab {
+            padding: 12px 18px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-light);
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: var(--transition);
+        }
+
+        .simulation-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .simulation-content {
+            display: none;
+        }
+
+        .simulation-content.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .simulation-control {
+            margin-bottom: 20px;
+        }
+
+        .simulation-result {
+            background: rgba(31, 106, 72, 0.05);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin-top: 16px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(31, 106, 72, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* ===== CHATBOT ===== */
+        .chatbot-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .chatbot-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            border-radius: 16px 16px 0 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #fafafa;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .chat-message.user {
+            text-align: right;
+        }
+
+        .chat-message.bot {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .user .message-bubble {
+            background: var(--primary);
+            color: white;
+            border-radius: 16px 4px 16px 16px;
+        }
+
+        .bot .message-bubble {
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px 16px 16px 16px;
+        }
+
+        .message-hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .chatbot-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .chatbot-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chatbot-btn {
+            padding: 10px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .chatbot-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .guardrail-warning {
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 3px solid var(--warning);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--warning);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+
+        /* ===== LOADING & STATES ===== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text-light);
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .chatbot-container {
+                display: none;
+            }
+
+            .form-step p {
+                font-size: 0.9rem;
+            }
+
+            .option-group {
+                grid-template-columns: 1fr;
+            }
+
+            .confidence-badge {
+                min-width: auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>🌾 Fahamu Shamba</h1>
+                <p>Smart Crop Recommendation for Your Farm</p>
+            </div>
+            <div class="header-right">
+                <div class="language-selector">
+                    <i class="fas fa-globe"></i>
+                    <select id="languageSelect" onchange="changeLanguage(this.value)">
+                        <option value="en">English</option>
+                        <option value="sw">Kiswahili</option>
+                        <option value="lo">Dholuo</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <!-- Main Content -->
+            <div>
+                <!-- Step-by-Step Form -->
+                <div class="form-container">
+                    <div class="form-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Tell Us About Your Farm
+                    </div>
+
+                    <!-- Step Indicator -->
+                    <div class="step-indicator">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Location</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Soil & Season</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Budget</div>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Farm Details</div>
+                        </div>
+                    </div>
+
+                    <!-- Form Steps -->
+                    <div class="form-steps">
+                        <!-- Step 1: Location -->
+                        <div class="form-step active" data-step="1">
+                            <h3>Which sub-county are you in?</h3>
+                            <p>We'll use this to match crops to your local climate and market conditions.</p>
+                            <div class="form-group">
+                                <label>Sub-County</label>
+                                <div class="option-group">
+                                    <button class="option-btn" data-value="bondo" onclick="selectOption(this, 'subCounty')">
+                                        <i class="fas fa-map-marker-alt"></i> Bondo
+                                    </button>
+                                    <button class="option-btn" data-value="ugunja" onclick="selectOption(this, 'subCounty')">
+                                        <i class="fas fa-map-marker-alt"></i> Ugunja
+                                    </button>
+                                    <button class="option-btn" data-value="yala" onclick="selectOption(this, 'subCounty')">
+                                        <i class="fas fa-map-marker-alt"></i> Yala
+                                    </button>
+                                    <button class="option-btn" data-value="gem" onclick="selectOption(this, 'subCounty')">
+                                        <i class="fas fa-map-marker-alt"></i> Gem
+                                    </button>
+                                    <button class="option-btn" data-value="alego" onclick="selectOption(this, 'subCounty')">
+                                        <i class="fas fa-map-marker-alt"></i> Alego
+                                    </button>
+                                </div>
+                                <div class="validation-hint info" id="hint-subCounty">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Each location has different rainfall and soil patterns.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Soil & Season -->
+                        <div class="form-step" data-step="2">
+                            <h3>What is your soil type?</h3>
+                            <p>Soil type affects nutrient availability and water retention.</p>
+                            <div class="form-group">
+                                <label>Soil Type</label>
+                                <div class="option-group">
+                                    <button class="option-btn" data-value="sandy" onclick="selectOption(this, 'soilType')">
+                                        <i class="fas fa-water"></i> Sandy
+                                    </button>
+                                    <button class="option-btn" data-value="loam" onclick="selectOption(this, 'soilType')">
+                                        <i class="fas fa-leaf"></i> Loam
+                                    </button>
+                                    <button class="option-btn" data-value="clay" onclick="selectOption(this, 'soilType')">
+                                        <i class="fas fa-cube"></i> Clay
+                                    </button>
+                                </div>
+                                <div class="validation-hint info" id="hint-soilType">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Loam is ideal for most crops. Sandy needs more irrigation. Clay needs drainage.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 24px;">
+                                <label>Which season are we in?</label>
+                                <div class="option-group">
+                                    <button class="option-btn" data-value="long_rains" onclick="selectOption(this, 'season')">
+                                        <i class="fas fa-cloud-rain"></i> Long Rains
+                                    </button>
+                                    <button class="option-btn" data-value="short_rains" onclick="selectOption(this, 'season')">
+                                        <i class="fas fa-cloud"></i> Short Rains
+                                    </button>
+                                    <button class="option-btn" data-value="dry" onclick="selectOption(this, 'season')">
+                                        <i class="fas fa-sun"></i> Dry Season
+                                    </button>
+                                </div>
+                                <div class="validation-hint info" id="hint-season">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Different crops thrive in different seasons. We'll match accordingly.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Budget -->
+                        <div class="form-step" data-step="3">
+                            <h3>What is your planting budget?</h3>
+                            <p>This helps us recommend crops that fit your financial capacity.</p>
+                            <div class="form-group">
+                                <label>Budget (KSh)</label>
+                                <div class="range-slider">
+                                    <input type="range" id="budget" min="1000" max="50000" step="1000" 
+                                           value="5000" onchange="updateRange(this)">
+                                    <span class="range-value" id="budgetValue">KSh 5,000</span>
+                                </div>
+                                <div class="validation-hint info" id="hint-budget">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span id="budgetHint">Beans and sorghum are affordable options under 5,000 KSh.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 24px;">
+                                <label>Water Source</label>
+                                <div class="option-group">
+                                    <button class="option-btn" data-value="rainfall" onclick="selectOption(this, 'waterSource')">
+                                        <i class="fas fa-cloud-rain"></i> Rainfall
+                                    </button>
+                                    <button class="option-btn" data-value="irrigation" onclick="selectOption(this, 'waterSource')">
+                                        <i class="fas fa-faucet"></i> Irrigation
+                                    </button>
+                                    <button class="option-btn" data-value="borehole" onclick="selectOption(this, 'waterSource')">
+                                        <i class="fas fa-water"></i> Borehole
+                                    </button>
+                                </div>
+                                <div class="validation-hint info" id="hint-waterSource">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Guaranteed water sources allow for more crop options.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Farm Details -->
+                        <div class="form-step" data-step="4">
+                            <h3>Tell us about your farm</h3>
+                            <p>These details help us optimize the recommendation for your situation.</p>
+
+                            <div class="form-group">
+                                <label>Farm Size (hectares)</label>
+                                <div class="range-slider">
+                                    <input type="range" id="farmSize" min="0.5" max="10" step="0.5" 
+                                           value="2" onchange="updateRange(this)">
+                                    <span class="range-value" id="farmSizeValue">2.0 ha</span>
+                                </div>
+                                <div class="validation-hint info" id="hint-farmSize">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span id="farmSizeHint">Small farms (< 2 ha) suit intensive crops like vegetables. Larger farms suit cereals.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Farmer Name (Optional)</label>
+                                <input type="text" id="farmerName" placeholder="Your name" 
+                                       onchange="validateName(this)">
+                                <div class="validation-hint info" id="hint-farmerName">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>We'll personalize your recommendations with your name.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number (Optional)</label>
+                                <input type="tel" id="phoneNumber" placeholder="+254712345678" 
+                                       onchange="validatePhone(this)">
+                                <div class="validation-hint info" id="hint-phoneNumber">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>For SMS notifications when markets change or new tips arrive.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Navigation -->
+                    <div class="form-navigation">
+                        <button class="btn btn-secondary" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <button class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()" style="display: none;">
+                            Get Recommendation <i class="fas fa-magic"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-container" id="resultsContainer">
+                    <div id="resultsContent"></div>
+
+                    <!-- What-If Simulator -->
+                    <div class="simulation-container">
+                        <h2>
+                            <i class="fas fa-flask"></i> What-If Simulator
+                        </h2>
+                        <p style="color: var(--text-light); margin-bottom: 20px;">
+                            Try changing variables to see how recommendations shift.
+                        </p>
+
+                        <div class="simulation-tabs">
+                            <button class="simulation-tab active" onclick="switchTab('budget-sim')">
+                                <i class="fas fa-money-bill"></i> Budget Change
+                            </button>
+                            <button class="simulation-tab" onclick="switchTab('rainfall-sim')">
+                                <i class="fas fa-cloud-rain"></i> Rainfall Variation
+                            </button>
+                            <button class="simulation-tab" onclick="switchTab('soil-sim')">
+                                <i class="fas fa-leaf"></i> Soil Improvement
+                            </button>
+                        </div>
+
+                        <!-- Budget Simulation -->
+                        <div class="simulation-content active" id="budget-sim">
+                            <div class="simulation-control">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dark); font-weight: 600;">
+                                    Simulate with budget: <span id="simBudgetValue">KSh 5,000</span>
+                                </label>
+                                <div class="range-slider">
+                                    <input type="range" id="simBudget" min="1000" max="50000" step="1000" 
+                                           value="5000" onchange="simulateBudget(this.value)">
+                                </div>
+                            </div>
+                            <div class="simulation-result" id="budgetSimResult">
+                                <div class="result-item">
+                                    <span class="result-label">New Best Crop:</span>
+                                    <span class="result-value" id="simCrop">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Confidence Score:</span>
+                                    <span class="result-value" id="simScore">—%</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Input Cost:</span>
+                                    <span class="result-value" id="simCost">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rainfall Simulation -->
+                        <div class="simulation-content" id="rainfall-sim">
+                            <div class="simulation-control">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dark); font-weight: 600;">
+                                    Rainfall scenario: <span id="simRainfallValue">Normal</span>
+                                </label>
+                                <div class="option-group">
+                                    <button class="option-btn active" data-value="low" onclick="simulateRainfall('low', this)">
+                                        <i class="fas fa-sun"></i> Low
+                                    </button>
+                                    <button class="option-btn" data-value="normal" onclick="simulateRainfall('normal', this)">
+                                        <i class="fas fa-cloud"></i> Normal
+                                    </button>
+                                    <button class="option-btn" data-value="high" onclick="simulateRainfall('high', this)">
+                                        <i class="fas fa-cloud-rain"></i> High
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="simulation-result" id="rainfallSimResult">
+                                <div class="result-item">
+                                    <span class="result-label">Best Crop:</span>
+                                    <span class="result-value" id="simCropRain">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Water Requirement Match:</span>
+                                    <span class="result-value" id="simWaterMatch">—%</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Yield Impact:</span>
+                                    <span class="result-value" id="simYieldImpact">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Soil Improvement Simulation -->
+                        <div class="simulation-content" id="soil-sim">
+                            <div class="simulation-control">
+                                <label style="display: block; margin-bottom: 10px; color: var(--text-dark); font-weight: 600;">
+                                    Soil improvement action:
+                                </label>
+                                <div class="option-group">
+                                    <button class="option-btn active" data-value="none" onclick="simulateSoil('none', this)">
+                                        <i class="fas fa-minus-circle"></i> None
+                                    </button>
+                                    <button class="option-btn" data-value="manure" onclick="simulateSoil('manure', this)">
+                                        <i class="fas fa-leaf"></i> Add Manure
+                                    </button>
+                                    <button class="option-btn" data-value="drain" onclick="simulateSoil('drain', this)">
+                                        <i class="fas fa-water"></i> Improve Drainage
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="simulation-result" id="soilSimResult">
+                                <div class="result-item">
+                                    <span class="result-label">New Viable Crops:</span>
+                                    <span class="result-value" id="simCropsSoil">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Nitrogen Level:</span>
+                                    <span class="result-value" id="simNitrogen">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Improvement Cost:</span>
+                                    <span class="result-value" id="simImprovementCost">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Chatbot -->
+            <div class="chatbot-container">
+                <div class="chatbot-header">
+                    <i class="fas fa-robot"></i> Farm AI Assistant
+                </div>
+                <div class="chatbot-body" id="chatMessages">
+                    <div class="chat-message bot">
+                        <div class="message-bubble">
+                            Hello! I'm your farming AI. I can answer questions about crops, soil, weather, and inputs.
+                            <div class="message-hint">🌾 Agriculture-focused only</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chatbot-footer">
+                    <input type="text" class="chatbot-input" id="chatInput" 
+                           placeholder="Ask about crops..." 
+                           onkeypress="handleChatInput(event)">
+                    <button class="chatbot-btn" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== FORM STATE =====
+        let currentStep = 1;
+        const formData = {
+            subCounty: null,
+            soilType: null,
+            season: null,
+            budget: 5000,
+            farmSize: 2,
+            waterSource: null,
+            farmerName: '',
+            phoneNumber: ''
+        };
+
+        // ===== CROP DATABASE =====
+        const cropDatabase = {
+            'Maize': {
+                confidence: 85,
+                reasons: [
+                    'Perfect soil compatibility with loam',
+                    'Ideal growth during long rains season',
+                    'High market demand in your region',
+                    'Suitable for 2-3 ha farm size'
+                ],
+                risks: [
+                    'Requires moderate nitrogen (150-200 kg/ha)',
+                    'Vulnerable to fall armyworm if not monitored',
+                    'Needs consistent rainfall of 600-800mm'
+                ],
+                inputs: {
+                    'Fertilizers': [
+                        { name: 'Urea', dosage: '150-200 kg/ha', purpose: 'Nitrogen source' },
+                        { name: 'DAP', dosage: '100-150 kg/ha', purpose: 'Early phosphorus' },
+                        { name: 'Potassium Chloride', dosage: '60-80 kg/ha', purpose: 'Stalk strength' }
+                    ],
+                    'Pesticides': [
+                        { name: 'Cypermethrin', dosage: '300-500 ml/ha', purpose: 'Corn borers' },
+                        { name: 'Thiamethoxam', dosage: '100-150 g/ha', purpose: 'Systemic control' }
+                    ],
+                    'Seeds': [
+                        { name: 'Hybrid seed', dosage: '20-25 kg/ha', purpose: 'High yield varieties' }
+                    ]
+                },
+                expectedYield: '3.5-4.5 tons/ha',
+                marketPrice: 'KSh 60-75 per kg',
+                plantingDate: 'March-April (long rains)'
+            },
+            'Beans': {
+                confidence: 78,
+                reasons: [
+                    'Excellent nitrogen fixation capability',
+                    'Lower input costs (3,000-4,000 KSh)',
+                    'Good market value for small farms',
+                    'Works well in intercropping'
+                ],
+                risks: [
+                    'Susceptible to pod borers during pod formation',
+                    'Requires well-drained soil',
+                    'Price fluctuations in market'
+                ],
+                inputs: {
+                    'Fertilizers': [
+                        { name: 'DAP', dosage: '150-200 kg/ha', purpose: 'Phosphorus' },
+                        { name: 'Gypsum', dosage: '200-400 kg/ha', purpose: 'Calcium' }
+                    ],
+                    'Pesticides': [
+                        { name: 'Quinalphos', dosage: '1.0-1.5 L/ha', purpose: 'Pod borer control' }
+                    ],
+                    'Seeds': [
+                        { name: 'Improved varieties', dosage: '40-60 kg/ha', purpose: 'Better yields' }
+                    ]
+                },
+                expectedYield: '1.5-2.5 tons/ha',
+                marketPrice: 'KSh 80-100 per kg',
+                plantingDate: 'March or October'
+            },
+            'Rice': {
+                confidence: 72,
+                reasons: [
+                    'High market demand in region',
+                    'Good for loamy, flooded conditions',
+                    'Relatively stable market prices',
+                    'Multi-season cultivation possible'
+                ],
+                risks: [
+                    'Requires controlled water management',
+                    'Blast disease in high humidity',
+                    'Labor intensive harvesting',
+                    'Higher input costs (6,000-8,000 KSh)'
+                ],
+                inputs: {
+                    'Fertilizers': [
+                        { name: 'Urea', dosage: '100-150 kg/ha', purpose: 'Growth nitrogen' },
+                        { name: 'DAP', dosage: '60-80 kg/ha', purpose: 'Establishment' }
+                    ],
+                    'Pesticides': [
+                        { name: 'Chlorpyrifos', dosage: '1.5-2.0 L/ha', purpose: 'Stem borers' }
+                    ],
+                    'Equipment': [
+                        { name: 'Paddies preparation', dosage: '—', purpose: 'Field preparation' }
+                    ]
+                },
+                expectedYield: '4.0-6.0 tons/ha',
+                marketPrice: 'KSh 50-65 per kg',
+                plantingDate: 'March-May'
+            },
+            'Sorghum': {
+                confidence: 68,
+                reasons: [
+                    'Drought tolerant crop',
+                    'Lower fertilizer requirements',
+                    'Good for sandy soils',
+                    'Affordable input costs (2,500-3,500 KSh)'
+                ],
+                risks: [
+                    'Lower market prices than maize',
+                    'Shoot fly damage in early stage',
+                    'Grain mold in high humidity',
+                    'Limited market outlets'
+                ],
+                inputs: {
+                    'Fertilizers': [
+                        { name: 'Urea', dosage: '80-120 kg/ha', purpose: 'Growth support' },
+                        { name: 'DAP', dosage: '60-100 kg/ha', purpose: 'Root development' }
+                    ],
+                    'Pesticides': [
+                        { name: 'Monocrotophos', dosage: '1.0-1.5 L/ha', purpose: 'Shoot fly' }
+                    ]
+                },
+                expectedYield: '2.0-3.0 tons/ha',
+                marketPrice: 'KSh 35-45 per kg',
+                plantingDate: 'March-April'
+            }
+        };
+
+        // ===== STEP NAVIGATION =====
+        function changeStep(direction) {
+            const totalSteps = 4;
+            const nextStep = currentStep + direction;
+
+            if (nextStep < 1 || nextStep > totalSteps) return;
+
+            // Validate current step before moving
+            if (!validateStep(currentStep)) {
+                alert('Please complete this step before continuing.');
+                return;
+            }
+
+            currentStep = nextStep;
+            updateStepUI();
+        }
+
+        function validateStep(step) {
+            const checks = {
+                1: () => formData.subCounty !== null,
+                2: () => formData.soilType !== null && formData.season !== null,
+                3: () => formData.waterSource !== null,
+                4: () => true
+            };
+            return checks[step] ? checks[step]() : true;
+        }
+
+        function updateStepUI() {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show current step
+            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((el, idx) => {
+                const stepNum = idx + 1;
+                el.classList.remove('active', 'completed');
+                if (stepNum < currentStep) {
+                    el.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Update buttons
+            document.getElementById('prevBtn').style.display = currentStep > 1 ? 'flex' : 'none';
+            document.getElementById('nextBtn').style.display = currentStep < 4 ? 'flex' : 'none';
+            document.getElementById('submitBtn').style.display = currentStep === 4 ? 'flex' : 'none';
+        }
+
+        // ===== FORM INTERACTIONS =====
+        function selectOption(btn, field) {
+            const group = btn.parentElement;
+            group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            formData[field] = btn.dataset.value;
+
+            // Show success hint
+            const hint = document.getElementById(`hint-${field}`);
+            if (hint) {
+                hint.classList.remove('info', 'error');
+                hint.classList.add('success');
+                hint.innerHTML = '<i class="fas fa-check-circle"></i><span>Great choice! ✓</span>';
+                setTimeout(() => {
+                    hint.classList.remove('success');
+                    hint.classList.add('info');
+                }, 2000);
+            }
+        }
+
+        function updateRange(input) {
+            const field = input.id;
+            const value = parseFloat(input.value);
+            formData[field] = value;
+
+            if (field === 'budget') {
+                document.getElementById('budgetValue').textContent = `KSh ${value.toLocaleString()}`;
+                const hint = getBudgetHint(value);
+                document.getElementById('budgetHint').textContent = hint;
+            } else if (field === 'farmSize') {
+                document.getElementById('farmSizeValue').textContent = `${value.toFixed(1)} ha`;
+                const hint = getFarmSizeHint(value);
+                document.getElementById('farmSizeHint').textContent = hint;
+            }
+        }
+
+        function getBudgetHint(budget) {
+            if (budget < 3000) return 'Affordable crops: Beans, Sorghum - minimal inputs needed.';
+            if (budget < 6000) return 'Good options: Maize, Beans, Groundnuts - balanced input costs.';
+            return 'Premium crops available: Rice, Tomatoes - higher input investments possible.';
+        }
+
+        function getFarmSizeHint(size) {
+            if (size < 1) return 'Perfect for intensive crops: Vegetables, herbs - maximize per hectare returns.';
+            if (size < 3) return 'Ideal for mixed farming: Cereals + beans, or vegetables + maize.';
+            return 'Suitable for large-scale production: Maize, rice, sugarcane - mechanization possible.';
+        }
+
+        function validateName(input) {
+            formData.farmerName = input.value;
+            if (input.value.length >= 2) {
+                showValidationHint('farmerName', 'success', 'Name saved! ✓');
+            }
+        }
+
+        function validatePhone(input) {
+            formData.phoneNumber = input.value;
+            const phoneRegex = /^(\+254|0)[712]\d{8}$/;
+            if (phoneRegex.test(input.value)) {
+                showValidationHint('phoneNumber', 'success', 'Valid phone number! ✓');
+            } else if (input.value) {
+                showValidationHint('phoneNumber', 'error', 'Format: +254712345678 or 0712345678');
+            }
+        }
+
+        function showValidationHint(field, type, message) {
+            const hint = document.getElementById(`hint-${field}`);
+            hint.classList.remove('info', 'success', 'error');
+            hint.classList.add(type);
+            hint.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+        }
+
+        // ===== FORM SUBMISSION & RESULTS =====
+        function submitForm() {
+            // Validate all fields
+            if (!formData.subCounty || !formData.soilType || !formData.season || !formData.waterSource) {
+                alert('Please complete all fields');
+                return;
+            }
+
+            // Simulate API call
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '<div class="loading"><div class="spinner"></div> Analyzing your farm...</div>';
+            resultsContainer.classList.add('show');
+
+            setTimeout(() => {
+                const recommendations = generateRecommendations();
+                displayResults(recommendations);
+            }, 1500);
+        }
+
+        function generateRecommendations() {
+            // Simple scoring logic
+            const scores = {};
+            for (const [crop, data] of Object.entries(cropDatabase)) {
+                let score = data.confidence;
+                
+                // Adjust for soil
+                if (formData.soilType === 'loam') score += 5;
+                
+                // Adjust for budget
+                if (formData.budget < 3000) {
+                    score = ['Beans', 'Sorghum'].includes(crop) ? score + 10 : score - 5;
+                }
+
+                scores[crop] = Math.min(100, score);
+            }
+
+            // Return top 3
+            return Object.entries(scores)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 3)
+                .map(([crop, score]) => ({ crop, score }));
+        }
+
+        function displayResults(recommendations) {
+            const resultsHtml = recommendations.map((rec, idx) => {
+                const crop = cropDatabase[rec.crop];
+                return `
+                    <div class="recommendation-card">
+                        <div class="crop-header">
+                            <div class="crop-title">#${idx + 1} ${rec.crop}</div>
+                            <div class="confidence-badge">
+                                <div class="confidence-score">${rec.score}%</div>
+                                <div class="confidence-label">Suitable</div>
+                            </div>
+                        </div>
+
+                        <div class="rationale-section">
+                            <div class="section-title"><i class="fas fa-lightbulb"></i> Why This Crop?</div>
+                            ${crop.reasons.map(r => `
+                                <div class="rationale-item">
+                                    <i class="fas fa-check"></i> ${r}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="rationale-section risks-section">
+                            <div class="section-title"><i class="fas fa-exclamation-triangle"></i> Key Risks</div>
+                            ${crop.risks.map(r => `
+                                <div class="risk-item">
+                                    <i class="fas fa-warning"></i> ${r}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="rationale-section">
+                            <div class="section-title"><i class="fas fa-boxes"></i> Required Inputs</div>
+                            <div class="inputs-grid">
+                                ${Object.entries(crop.inputs).map(([category, items]) => `
+                                    <div class="input-card">
+                                        <div class="category">${category}</div>
+                                        ${items.map(item => `
+                                            <div class="item">
+                                                ${item.name}
+                                                <div class="dosage">${item.dosage}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="rationale-section">
+                            <div class="section-title"><i class="fas fa-chart-line"></i> Expected Performance</div>
+                            <div class="inputs-grid">
+                                <div class="input-card">
+                                    <div class="category">Yield</div>
+                                    <div class="item">${crop.expectedYield}</div>
+                                </div>
+                                <div class="input-card">
+                                    <div class="category">Market Price</div>
+                                    <div class="item">${crop.marketPrice}</div>
+                                </div>
+                                <div class="input-card">
+                                    <div class="category">Planting Date</div>
+                                    <div class="item">${crop.plantingDate}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('resultsContent').innerHTML = resultsHtml;
+        }
+
+        // ===== WHAT-IF SIMULATOR =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.simulation-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.simulation-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function simulateBudget(value) {
+            document.getElementById('simBudgetValue').textContent = `KSh ${parseInt(value).toLocaleString()}`;
+            
+            // Adjust crop recommendations based on budget
+            const budgetRange = parseInt(value);
+            let crop = 'Maize';
+            let score = 85;
+            let cost = budgetRange;
+
+            if (budgetRange < 3000) {
+                crop = 'Beans';
+                score = 88;
+            } else if (budgetRange < 5000) {
+                crop = 'Sorghum';
+                score = 82;
+            }
+
+            document.getElementById('simCrop').textContent = crop;
+            document.getElementById('simScore').textContent = score;
+            document.getElementById('simCost').textContent = `KSh ${cost.toLocaleString()}`;
+        }
+
+        function simulateRainfall(scenario, btn) {
+            document.querySelectorAll('[onclick*="simulateRainfall"]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            let crop = 'Maize';
+            let waterMatch = 95;
+            let yield_ = 'High (+15%)';
+
+            if (scenario === 'low') {
+                crop = 'Sorghum';
+                waterMatch = 92;
+                yield_ = 'Moderate (stable)';
+            } else if (scenario === 'high') {
+                crop = 'Rice';
+                waterMatch = 98;
+                yield_ = 'Very High (+25%)';
+            }
+
+            document.getElementById('simCropRain').textContent = crop;
+            document.getElementById('simWaterMatch').textContent = waterMatch;
+            document.getElementById('simYieldImpact').textContent = yield_;
+        }
+
+        function simulateSoil(action, btn) {
+            document.querySelectorAll('[onclick*="simulateSoil"]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            let crops = 'Maize, Beans';
+            let nitrogen = 'Medium (15 mg/kg)';
+            let cost = 'KSh 3,000';
+
+            if (action === 'manure') {
+                crops = 'Maize, Beans, Vegetables';
+                nitrogen = 'High (25 mg/kg)';
+                cost = 'KSh 2,500-3,500';
+            } else if (action === 'drain') {
+                crops = 'All crops possible';
+                nitrogen = 'Enhanced absorption';
+                cost = 'KSh 4,000-5,000';
+            }
+
+            document.getElementById('simCropsSoil').textContent = crops;
+            document.getElementById('simNitrogen').textContent = nitrogen;
+            document.getElementById('simImprovementCost').textContent = cost;
+        }
+
+        // ===== AGRICULTURE CHATBOT WITH GUARDRAILS =====
+        const agriculturalTopics = [
+            'crop', 'soil', 'fertilizer', 'pesticide', 'seed', 'weather', 'rainfall',
+            'maize', 'beans', 'rice', 'sorghum', 'yield', 'harvest', 'season',
+            'irrigation', 'water', 'nitrogen', 'phosphorus', 'market', 'price', 'farm'
+        ];
+
+        const knowledgeBase = {
+            'maize': 'Maize is a staple crop in Kenya. It requires 600-800mm rainfall, loamy soil, and 150-200 kg/ha urea. Best planted during long rains (March-May).',
+            'beans': 'Beans are nitrogen-fixing legumes. They need 1000-1500mm rainfall, well-drained soil, and 150-200 kg/ha DAP. Grows in 3-4 months.',
+            'soil': 'Soil has three main types: sandy (drains quickly, needs irrigation), loam (ideal, balanced), and clay (retains water, needs drainage). Test pH (6-7 ideal).',
+            'fertilizer': 'NPK fertilizers provide nitrogen (growth), phosphorus (roots), potassium (strength). Apply based on soil test. Urea, DAP, and MOP are common in Kenya.',
+            'rainfall': 'Long rains: March-May (600-800mm). Short rains: October-December (300-500mm). Monitor for planning crop calendar.',
+            'budget': 'Budget depends on crop: Beans (3,000-4,000 KSh), Maize (5,000-7,000 KSh), Rice (7,000-9,000 KSh).',
+            'default': 'I can help with crop recommendations, soil management, fertilizer use, pest control, and seasonal planning. Ask me about crops or farming!'
+        };
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addChatMessage('user', message);
+            input.value = '';
+
+            // Process with guardrails
+            setTimeout(() => {
+                const response = generateAgricultureResponse(message);
+                addChatMessage('bot', response);
+            }, 800);
+        }
+
+        function generateAgricultureResponse(userMessage) {
+            const lowercaseMsg = userMessage.toLowerCase();
+            
+            // Check if agriculture-related
+            const isAgriculture = agriculturalTopics.some(topic => lowercaseMsg.includes(topic));
+            
+            if (!isAgriculture) {
+                return `<div class="guardrail-warning">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>I'm trained for agriculture only. Please ask about crops, soil, fertilizers, weather, or farming practices.</span>
+                </div>`;
+            }
+
+            // Find relevant knowledge
+            for (const [keyword, answer] of Object.entries(knowledgeBase)) {
+                if (lowercaseMsg.includes(keyword)) {
+                    return answer + '<div class="message-hint">📚 Based on agricultural best practices</div>';
+                }
+            }
+
+            return knowledgeBase.default + '<div class="message-hint">💡 Ask me about crops or farming!</div>';
+        }
+
+        function addChatMessage(role, message) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${message}</div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // ===== LANGUAGE SUPPORT =====
+        function changeLanguage(lang) {
+            console.log('Language changed to:', lang);
+            // Implementation for language switching
+        }
+
+        // ===== INITIALIZATION =====
+        window.addEventListener('load', () => {
+            updateStepUI();
+            simulateBudget(5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║         FARMER PROFILE MANAGEMENT MODULE - QUICK REFERENCE CARD          ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+🌾 QUICK START (2 Minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start Server:
+   $ cd backend && node server.js
+
+2. Access Dashboard:
+   URL: http://localhost:5000/farmer-profile-dashboard
+
+3. Register Farmer:
+   - Click "Register Farmer" tab
+   - Fill required fields (marked with *)
+   - Click "Register Farmer" button
+
+4. View Results:
+   - Click "View Farmers" tab
+   - See list of registered farmers
+
+✅ Done! System is working.
+
+
+📍 IMPORTANT URLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dashboard:        http://localhost:5000/farmer-profile-dashboard
+API Test:         http://localhost:5000/api/test
+API Base:         http://localhost:5000/api/farmer-profile
+Admin Dashboard:  http://localhost:5000/admin
+Main Dashboard:   http://localhost:5000/dashboard
+
+
+🔌 KEY API ENDPOINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Register Farmer:
+  POST /api/farmer-profile/register
+  Required: phoneNumber, firstName, lastName, subCounty, farmSize
+
+Get Farmer:
+  GET /api/farmer-profile/:farmerId
+  GET /api/farmer-profile/phone/:phoneNumber
+
+List Farmers:
+  GET /api/farmer-profile?limit=20&offset=0
+
+Search Farmers:
+  GET /api/farmer-profile/search/John%20Doe
+
+Update Farmer:
+  PUT /api/farmer-profile/:farmerId
+
+Verify Profile:
+  POST /api/farmer-profile/:farmerId/verify
+
+Statistics:
+  GET /api/farmer-profile/statistics
+
+
+📄 REQUIRED REGISTRATION FIELDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Phone Number     (e.g., 254712345678)
+✓ First Name       (Farmer's first name)
+✓ Last Name        (Farmer's last name)
+✓ Sub-County       (Location)
+✓ Farm Size        (In acres, e.g., 2.5)
+
+Optional Fields:
+  • Email
+  • Date of Birth
+  • Gender
+  • ID Number
+  • Ward
+  • Soil Type
+  • Water Source
+  • Crops Grown
+  • Livestock Kept
+  • Annual Income
+  • Budget
+
+
+🔄 PROFILE COMPLETION PERCENTAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Calculation:
+  Required (60%):  First name, Last name, Email, Sub-county, Farm size
+  Optional (40%):  DOB, Gender, ID, Ward, Soil type, Water, Crops, etc.
+
+Examples:
+  60%   = Only required fields filled
+  80%   = Required + 5 optional fields
+  100%  = All fields filled
+
+
+📖 DOCUMENTATION FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For...                          Read This...
+─────────────────────────────   ─────────────────────────────────────
+Quick 5-minute setup            FARMER_PROFILE_QUICKSTART.md
+Complete reference              FARMER_PROFILE_README.md
+Technical integration details   FARMER_PROFILE_INTEGRATION_GUIDE.md
+Architecture overview           FARMER_PROFILE_IMPLEMENTATION_SUMMARY.md
+Testing verification            FARMER_PROFILE_VERIFICATION.md
+All deliverables summary        FARMER_PROFILE_DELIVERABLES.txt
+
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dashboard Won't Load:
+  1. Check server: curl http://localhost:5000/api/test
+  2. Check port:   Verify 5000 is not in use
+  3. Check files:  ls backend/public/farmer-profile-dashboard.html
+  4. Restart:      Kill and restart node server.js
+
+Registration Fails:
+  1. Check required fields are filled (5 required fields)
+  2. Verify phone number is unique (not already registered)
+  3. Check server logs for error messages
+  4. Check browser console (F12) for errors
+
+No Search Results:
+  1. Verify farmers exist: GET /api/farmer-profile?limit=1
+  2. Check search term matches data
+  3. Try searching by phone or farmer ID
+  4. Check database: sqlite3 backend/fahamu_shamba.db "SELECT COUNT(*) FROM farmer_profiles;"
+
+API Returns 404:
+  1. Verify URL is correct: /api/farmer-profile/...
+  2. Check server is running: curl http://localhost:5000/api/test
+  3. Verify routes are registered in server.js
+  4. Restart server: Kill and restart node
+
+
+📊 DATABASE INFO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Database File:    backend/fahamu_shamba.db
+Main Table:       farmer_profiles
+Activity Log:     farmer_activity_logs
+Future Table:     farmer_farms
+
+To Query Database:
+  sqlite3 backend/fahamu_shamba.db
+
+Count Farmers:
+  SELECT COUNT(*) FROM farmer_profiles;
+
+List All Farmers:
+  SELECT farmer_id, first_name, last_name, phone_number FROM farmer_profiles;
+
+View Activity Log:
+  SELECT * FROM farmer_activity_logs LIMIT 10;
+
+
+🔐 SECURITY NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ All inputs validated server-side
+✓ Phone numbers and emails must be unique
+✓ SQL injection prevention (parameterized queries)
+✓ XSS prevention (HTML escaping)
+✓ Activity logging for audit trail
+✓ User attribution on all changes
+✓ Soft deletes (deactivation not deletion)
+
+
+⚡ PERFORMANCE TIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For Large Datasets:
+  • Use pagination: ?limit=50&offset=0
+  • Filter results: ?subCounty=xxx
+  • Search specific fields: search/:term
+  • Avoid listing all farmers without limit
+
+Database Optimization:
+  • Indexes created automatically on key fields
+  • Phone and email lookups are fast
+  • Geographic filtering by sub-county is optimized
+
+
+🎯 COMMON TASKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Register a Farmer:
+  Dashboard > Register Farmer tab > Fill form > Submit
+
+View All Farmers:
+  Dashboard > View Farmers tab > See paginated list
+
+Find Specific Farmer:
+  Dashboard > Search Farmer tab > Enter name/phone > Search
+
+Verify Profile:
+  Dashboard > View Farmers > Click farmer > Verify button
+
+Update Profile:
+  Dashboard > View Farmers > Click farmer > Update fields
+
+See Statistics:
+  Dashboard > Statistics tab > View charts and numbers
+
+Get Farmer by Phone (API):
+  GET /api/farmer-profile/phone/254712345678
+
+Export Farmer Data (API):
+  GET /api/farmer-profile/export
+
+
+📞 GETTING HELP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Check Documentation:
+  1. FARMER_PROFILE_QUICKSTART.md (5-minute overview)
+  2. FARMER_PROFILE_README.md (complete reference)
+  3. Inline code comments
+
+Check Logs:
+  1. Server console output
+  2. backend/server.log
+  3. Browser console (F12)
+
+Debug Database:
+  1. Check if tables exist: .tables
+  2. Count records: SELECT COUNT(*) FROM farmer_profiles;
+  3. Export sample: SELECT * FROM farmer_profiles LIMIT 5;
+
+Test API:
+  1. curl http://localhost:5000/api/test
+  2. curl http://localhost:5000/api/farmer-profile
+  3. Check response format and errors
+
+
+🚀 DEPLOYMENT CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before Going Live:
+  ☐ All files in correct locations
+  ☐ server.js properly integrated
+  ☐ Database tables created successfully
+  ☐ API endpoints tested
+  ☐ Dashboard loads without errors
+  ☐ Form validation works
+  ☐ Test farmer registered
+  ☐ Data persists after refresh
+  ☐ No errors in server logs
+  ☐ Documentation reviewed
+
+
+📦 FILES CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Core Implementation:
+   • backend/farmer-profile-dashboard.js
+   • backend/farmer-profile-routes.js
+   • backend/public/farmer-profile-dashboard.html
+
+✅ Documentation:
+   • FARMER_PROFILE_README.md
+   • FARMER_PROFILE_QUICKSTART.md
+   • FARMER_PROFILE_INTEGRATION_GUIDE.md
+   • FARMER_PROFILE_IMPLEMENTATION_SUMMARY.md
+   • FARMER_PROFILE_VERIFICATION.md
+   • FARMER_PROFILE_SETUP.sh
+   • FARMER_PROFILE_DELIVERABLES.txt
+   • FARMER_PROFILE_QUICK_REFERENCE.txt (this file)
+
+✅ Modified:
+   • backend/server.js
+
+
+💡 PRO TIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Use filters on View Farmers to reduce data load
+2. Search by phone number for fastest lookup
+3. Regular backups: cp backend/fahamu_shamba.db backup/
+4. Monitor profile completion percentage
+5. Verify profiles regularly for data quality
+6. Use pagination for large result sets
+7. Test API with curl before frontend integration
+8. Enable browser DevTools (F12) for debugging
+
+
+✅ STATUS: PRODUCTION READY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Module: Farmer Profile Management v1.0.0
+Date: December 4, 2025
+Status: ✅ COMPLETE & DEPLOYED
+Support: All documentation provided
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            READY TO USE NOW!
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,75 @@
+================================================================================
+⚡ QUICK FIX - DO THIS NOW
+================================================================================
+
+THE FIX IS DEPLOYED ✅
+Your browser just has the old code cached.
+
+WHAT TO DO (30 SECONDS):
+------------------------
+
+1. Press: F12 (opens Developer Tools)
+
+2. Right-click the Refresh button (↻) in the top left
+
+3. Click: "Empty cache and hard refresh" (or "Hard refresh")
+
+4. Wait for page to reload
+
+5. Try registration again
+
+✅ DONE! Should work now.
+
+================================================================================
+
+ALTERNATIVE (if above doesn't work):
+
+1. Press: Ctrl + Shift + Delete (Windows) or Cmd + Shift + Delete (Mac)
+
+2. Select: "All time"
+
+3. Check: "Cookies and cached files"
+
+4. Click: "Clear data"
+
+5. Press: Ctrl + Shift + R (Windows) or Cmd + Shift + R (Mac)
+
+6. Try registration again
+
+================================================================================
+
+NOT WORKING AFTER BOTH METHODS?
+
+Use Incognito/Private window to test:
+- Chrome: Ctrl + Shift + N
+- Firefox: Ctrl + Shift + P
+- Safari: Cmd + Shift + N
+- Edge: Ctrl + Shift + N
+
+If it works in incognito, you know it's a cache issue.
+Then use the above methods to clear it.
+
+================================================================================
+
+WHAT THE FIX DOES:
+
+✅ Only sends optional fields if selected
+✅ Doesn't send empty strings that fail constraints
+✅ Fixed all dropdown values (english, swahili, luo, sms, call, email)
+✅ Registration works without selecting gender/language/method
+
+FIELDS YOU CAN NOW SKIP:
+✓ Gender
+✓ Preferred Language
+✓ Contact Method
+(All other optional fields still work too)
+
+================================================================================
+
+Status: ✅ FIX DEPLOYED AND WORKING
+What you need: BROWSER CACHE CLEAR
+Time required: 30 seconds
+
+GO NOW: http://localhost:5000/farmer-registration
+
+================================================================================

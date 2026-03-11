@@ -1,0 +1,177 @@
+{
+  "generated_at": "2026-03-06T00:03:36.714604+03:00",
+  "target": "recommended_crop",
+  "dataset_rows": 450,
+  "train_rows": 360,
+  "test_rows": 90,
+  "selected_model": "random_forest",
+  "selected_model_metrics": {
+    "accuracy": 0.8666666666666667,
+    "f1_macro": 0.8764945763301026,
+    "top3_accuracy": 1.0
+  },
+  "quality_gate": {
+    "min_top3_accuracy": 0.7,
+    "selected_model_top3_accuracy": 1.0,
+    "passed": true,
+    "enforced": true
+  },
+  "models": {
+    "logistic_regression": {
+      "accuracy": 0.7333333333333333,
+      "f1_macro": 0.7720153185866724,
+      "top3_accuracy": 0.9888888888888889,
+      "classes": [
+        "beans",
+        "groundnuts",
+        "kale",
+        "maize",
+        "millet",
+        "rice",
+        "sorghum",
+        "tomatoes"
+      ],
+      "classification_report": {
+        "beans": {
+          "precision": 0.8,
+          "recall": 0.75,
+          "f1-score": 0.7741935483870968,
+          "support": 16.0
+        },
+        "groundnuts": {
+          "precision": 0.47058823529411764,
+          "recall": 0.6666666666666666,
+          "f1-score": 0.5517241379310345,
+          "support": 12.0
+        },
+        "kale": {
+          "precision": 1.0,
+          "recall": 0.8888888888888888,
+          "f1-score": 0.9411764705882353,
+          "support": 9.0
+        },
+        "maize": {
+          "precision": 0.9285714285714286,
+          "recall": 1.0,
+          "f1-score": 0.9629629629629629,
+          "support": 13.0
+        },
+        "millet": {
+          "precision": 0.36363636363636365,
+          "recall": 0.3076923076923077,
+          "f1-score": 0.3333333333333333,
+          "support": 13.0
+        },
+        "rice": {
+          "precision": 1.0,
+          "recall": 0.8571428571428571,
+          "f1-score": 0.9230769230769231,
+          "support": 7.0
+        },
+        "sorghum": {
+          "precision": 0.7142857142857143,
+          "recall": 0.6666666666666666,
+          "f1-score": 0.6896551724137931,
+          "support": 15.0
+        },
+        "tomatoes": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 5.0
+        },
+        "accuracy": 0.7333333333333333,
+        "macro avg": {
+          "precision": 0.784635217723453,
+          "recall": 0.7671321733821733,
+          "f1-score": 0.7720153185866724,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.744000509294627,
+          "recall": 0.7333333333333333,
+          "f1-score": 0.7348510284917477,
+          "support": 90.0
+        }
+      }
+    },
+    "random_forest": {
+      "accuracy": 0.8666666666666667,
+      "f1_macro": 0.8764945763301026,
+      "top3_accuracy": 1.0,
+      "classes": [
+        "beans",
+        "groundnuts",
+        "kale",
+        "maize",
+        "millet",
+        "rice",
+        "sorghum",
+        "tomatoes"
+      ],
+      "classification_report": {
+        "beans": {
+          "precision": 0.875,
+          "recall": 0.875,
+          "f1-score": 0.875,
+          "support": 16.0
+        },
+        "groundnuts": {
+          "precision": 0.8333333333333334,
+          "recall": 0.8333333333333334,
+          "f1-score": 0.8333333333333334,
+          "support": 12.0
+        },
+        "kale": {
+          "precision": 0.9,
+          "recall": 1.0,
+          "f1-score": 0.9473684210526315,
+          "support": 9.0
+        },
+        "maize": {
+          "precision": 0.9230769230769231,
+          "recall": 0.9230769230769231,
+          "f1-score": 0.9230769230769231,
+          "support": 13.0
+        },
+        "millet": {
+          "precision": 0.9090909090909091,
+          "recall": 0.7692307692307693,
+          "f1-score": 0.8333333333333334,
+          "support": 13.0
+        },
+        "rice": {
+          "precision": 1.0,
+          "recall": 0.8571428571428571,
+          "f1-score": 0.9230769230769231,
+          "support": 7.0
+        },
+        "sorghum": {
+          "precision": 0.7222222222222222,
+          "recall": 0.8666666666666667,
+          "f1-score": 0.7878787878787878,
+          "support": 15.0
+        },
+        "tomatoes": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1-score": 0.8888888888888888,
+          "support": 5.0
+        },
+        "accuracy": 0.8666666666666667,
+        "macro avg": {
+          "precision": 0.8953404234654235,
+          "recall": 0.8655563186813187,
+          "f1-score": 0.8764945763301026,
+          "support": 90.0
+        },
+        "weighted avg": {
+          "precision": 0.875016835016835,
+          "recall": 0.8666666666666667,
+          "f1-score": 0.8675979316330193,
+          "support": 90.0
+        }
+      }
+    }
+  }
+}

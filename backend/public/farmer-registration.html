@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Access - Fahamu Shamba</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green-700: #166534;
+            --green-600: #1f7a42;
+            --green-500: #2e8f52;
+            --green-100: #eaf6ee;
+            --orange-500: #ef8a22;
+            --ink: #2f3d36;
+            --muted: #62706a;
+            --line: #d8d8d8;
+            --panel: #efefef;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                linear-gradient(135deg, rgba(11, 51, 34, 0.78), rgba(16, 84, 52, 0.66)),
+                url('/assets/istockphoto-1346294867-612x612.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 12px;
+            color: var(--ink);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--panel);
+            border: 3px solid var(--green-600);
+            border-radius: 10px;
+            padding: 22px 20px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-wrap img {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #f3f3f3;
+            padding: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.14);
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 37px;
+            font-weight: 800;
+            color: var(--green-700);
+            line-height: 1;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            color: #5f6670;
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        #alertMessage {
+            display: none;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+
+        #alertMessage.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #eaf7ef;
+            color: #185935;
+            border-color: #bde1c8;
+        }
+
+        .alert-error {
+            background: #fdeef0;
+            color: #882c35;
+            border-color: #f0c0c6;
+        }
+
+        .alert-info {
+            background: #edf4ff;
+            color: #25507b;
+            border-color: #c9d9f2;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #36414c;
+        }
+
+        .req {
+            color: #cf3030;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 0;
+            background: #f8f8f8;
+            font-size: 13px;
+            color: #3b4550;
+            font-family: inherit;
+        }
+
+        .field textarea {
+            min-height: 88px;
+            resize: vertical;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--green-600);
+            box-shadow: 0 0 0 3px rgba(31, 122, 66, 0.12);
+            background: #fff;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .registration-type {
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        .mode-register .registration-type {
+            display: block;
+        }
+
+        .type-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .type-tab {
+            border: 1px solid #cdd6cf;
+            background: #f4faf6;
+            color: var(--green-700);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .type-tab.active {
+            background: var(--orange-500);
+            color: #fff;
+            border-color: var(--orange-500);
+        }
+
+        .register-only,
+        .login-only,
+        .register-individual-only,
+        .register-group-only,
+        .password-wrap {
+            display: none;
+        }
+
+	        .mode-login .login-only,
+	        .mode-register .register-only,
+	        .mode-login .password-wrap,
+	        .mode-register .password-wrap {
+	            display: block;
+	        }
+
+        .mode-register.reg-individual .register-individual-only,
+        .mode-register.reg-group .register-group-only {
+            display: block;
+        }
+
+        .show-pass {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            margin: 7px 0 12px;
+            color: #49545f;
+        }
+
+        .show-pass input {
+            width: auto;
+        }
+
+        .primary-btn {
+            width: 100%;
+            border: none;
+            background: var(--green-600);
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .primary-btn:hover {
+            background: var(--green-700);
+        }
+
+        .bottom-links {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 13px;
+            color: #49545f;
+            line-height: 1.7;
+        }
+
+        .link-btn,
+        .text-link {
+            border: none;
+            background: transparent;
+            color: var(--orange-500);
+            text-decoration: underline;
+            cursor: pointer;
+            font: inherit;
+            padding: 0;
+        }
+
+        .forgot-panel {
+            display: none;
+            margin-top: 12px;
+            border: 1px solid #c8d4dd;
+            background: #f4f7fa;
+            padding: 10px;
+        }
+
+        .forgot-panel.show {
+            display: block;
+        }
+
+        .small-btn {
+            border: none;
+            width: 100%;
+            margin-top: 8px;
+            background: #2f5f94;
+            color: white;
+            padding: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .small-btn:hover {
+            background: #244a73;
+        }
+
+        .helper {
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 460px) {
+            .auth-card {
+                padding: 18px 14px;
+            }
+
+            .brand {
+                font-size: 32px;
+            }
+
+            .row-2,
+            .type-tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .primary-btn {
+                font-size: 22px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div id="authCard" class="auth-card mode-login reg-individual">
+        <div class="logo-wrap">
+            <img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo">
+        </div>
+
+        <h1 class="brand">Fahamu Shamba</h1>
+
+        <h2 id="sectionTitle" class="section-title">Login</h2>
+
+        <div id="alertMessage"></div>
+
+        <form id="accessForm" onsubmit="submitAccessForm(event)">
+            <div class="registration-type">
+                <label>Registration Type</label>
+                <div class="type-tabs">
+                    <button id="individualTypeTab" type="button" class="type-tab active" onclick="setRegistrationType('individual')">Individual Registration</button>
+                    <button id="groupTypeTab" type="button" class="type-tab" onclick="setRegistrationType('group')">Group Registration</button>
+                </div>
+            </div>
+
+            <div class="login-only">
+                <div class="field">
+                    <label for="loginPhoneOrEmail">Email / Phone:</label>
+                    <input type="text" id="loginPhoneOrEmail" placeholder="Enter email or phone">
+                </div>
+            </div>
+
+            <div class="register-only register-individual-only">
+                <div class="row-2">
+                    <div class="field">
+                        <label for="firstName">First Name <span class="req">*</span></label>
+                        <input type="text" id="firstName" placeholder="Enter first name">
+                    </div>
+                    <div class="field">
+                        <label for="lastName">Last Name <span class="req">*</span></label>
+                        <input type="text" id="lastName" placeholder="Enter last name">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="individualPhone">Phone Number <span class="req">*</span></label>
+                    <input type="text" id="individualPhone" placeholder="0712345678">
+                </div>
+
+                <div class="field">
+                    <label for="registerEmail">Email <span class="req">*</span></label>
+                    <input type="email" id="registerEmail" placeholder="Enter email">
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="subCounty">Sub-County <span class="req">*</span></label>
+                        <select id="subCounty">
+                            <option value="">Select</option>
+                            <option value="Bondo">Bondo</option>
+                            <option value="Ugunja">Ugunja</option>
+                            <option value="Yala">Yala</option>
+                            <option value="Gem">Gem</option>
+                            <option value="Alego">Alego</option>
+                            <option value="Rarieda">Rarieda</option>
+                            <option value="Siaya Town">Siaya Town</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="soilType">Soil Type <span class="req">*</span></label>
+                        <select id="soilType">
+                            <option value="">Select</option>
+                            <option value="Sandy">Sandy</option>
+                            <option value="Clay">Clay</option>
+                            <option value="Loam">Loam</option>
+                            <option value="Rocky">Rocky</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="farmSize">Farm Size <span class="req">*</span></label>
+                        <input type="number" id="farmSize" min="0" step="0.1" placeholder="e.g. 2.5">
+                    </div>
+                    <div class="field">
+                        <label for="farmSizeUnit">Unit</label>
+                        <select id="farmSizeUnit">
+                            <option value="hectares">Hectares</option>
+                            <option value="acres">Acres</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="registerPhoto">Profile Photo (Optional)</label>
+                    <input type="file" id="registerPhoto" accept="image/*">
+                </div>
+            </div>
+
+            <div class="register-only register-group-only">
+                <div class="field">
+                    <label for="groupName">Group Name <span class="req">*</span></label>
+                    <input type="text" id="groupName" placeholder="e.g. Bondo Farmers Cooperative">
+                </div>
+
+                <div class="field">
+                    <label for="groupRegNumber">Group Registration Number</label>
+                    <input type="text" id="groupRegNumber" placeholder="Optional">
+                </div>
+
+                <div class="field">
+                    <label for="groupDescription">Group Description</label>
+                    <textarea id="groupDescription" placeholder="Brief description"></textarea>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="leaderFirstName">Leader First Name <span class="req">*</span></label>
+                        <input type="text" id="leaderFirstName" placeholder="Leader first name">
+                    </div>
+                    <div class="field">
+                        <label for="leaderLastName">Leader Last Name <span class="req">*</span></label>
+                        <input type="text" id="leaderLastName" placeholder="Leader last name">
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="leaderPhone">Leader Phone <span class="req">*</span></label>
+                        <input type="text" id="leaderPhone" placeholder="0712345678">
+                    </div>
+                    <div class="field">
+                        <label for="leaderEmail">Leader Email</label>
+                        <input type="email" id="leaderEmail" placeholder="Optional">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="groupSubCounty">Sub-County <span class="req">*</span></label>
+                    <select id="groupSubCounty">
+                        <option value="">Select</option>
+                        <option value="Bondo">Bondo</option>
+                        <option value="Ugunja">Ugunja</option>
+                        <option value="Yala">Yala</option>
+                        <option value="Gem">Gem</option>
+                        <option value="Alego">Alego</option>
+                        <option value="Rarieda">Rarieda</option>
+                        <option value="Siaya Town">Siaya Town</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="groupMembers">Group Members <span class="req">*</span></label>
+                    <textarea id="groupMembers" placeholder="One member per line: Name,Phone,FarmSize(optional)"></textarea>
+                    <p class="helper">Example: John Otieno,0712345678,2.5</p>
+                </div>
+
+                <div class="field">
+                    <label for="groupLeaderPhoto">Leader Photo (Optional)</label>
+                    <input type="file" id="groupLeaderPhoto" accept="image/*">
+                </div>
+            </div>
+
+            <div class="password-wrap">
+                <div class="field">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+
+	                <div class="field register-only">
+	                    <label for="confirmPassword">Confirm Password <span class="req">*</span></label>
+	                    <input type="password" id="confirmPassword" placeholder="Confirm password">
+	                </div>
+            </div>
+
+            <label class="show-pass password-wrap">
+                <input type="checkbox" id="showPasswordToggle" onchange="toggleShowPassword()"> Show Password
+            </label>
+
+            <button id="submitBtn" class="primary-btn" type="submit">SIGN IN</button>
+
+            <div class="forgot-panel" id="forgotPanel">
+                <div class="field">
+                    <label for="resetPhoneOrEmail">Phone/Email</label>
+                    <input type="text" id="resetPhoneOrEmail" placeholder="Identifier used during registration">
+                </div>
+                <div class="row-2">
+                    <div class="field">
+                        <label for="resetCode">Reset Code</label>
+                        <input type="text" id="resetCode" maxlength="6" placeholder="6-digit code">
+                    </div>
+                    <div class="field">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" placeholder="At least 6 chars">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+                </div>
+                <button type="button" class="small-btn" onclick="requestPasswordResetCode()">Send Reset Code</button>
+                <button type="button" class="small-btn" style="background:#1f7a42;" onclick="submitPasswordReset()">Reset Password</button>
+            </div>
+
+            <div class="bottom-links">
+                <div><button type="button" class="link-btn" onclick="toggleForgotPanel()">Forgot Username / Password?</button></div>
+                <div id="modeLine">Don't have an account? <button type="button" class="text-link" onclick="goToRegisterPage()">Sign up</button></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentMode = 'login';
+        let currentRegistrationType = 'individual';
+
+        function showAlert(message, type = 'info') {
+            const alertEl = document.getElementById('alertMessage');
+            alertEl.textContent = message;
+            alertEl.className = `show alert-${type}`;
+            setTimeout(() => alertEl.classList.remove('show'), 5000);
+        }
+
+        function goToRegisterPage() {
+            window.location.href = '/farmer-registration?mode=register';
+        }
+
+        function goToLoginPage() {
+            window.location.href = '/farmer-registration?mode=login';
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const card = document.getElementById('authCard');
+            const sectionTitle = document.getElementById('sectionTitle');
+            const submitBtn = document.getElementById('submitBtn');
+            const modeLine = document.getElementById('modeLine');
+            const forgotPanel = document.getElementById('forgotPanel');
+
+            forgotPanel.classList.remove('show');
+
+            if (mode === 'register') {
+                card.classList.remove('mode-login');
+                card.classList.add('mode-register');
+                sectionTitle.textContent = 'Register';
+                submitBtn.textContent = 'SIGN UP';
+                modeLine.innerHTML = "Already have an account? <button type=\"button\" class=\"text-link\" onclick=\"goToLoginPage()\">Sign in</button>";
+            } else {
+                card.classList.remove('mode-register');
+                card.classList.add('mode-login');
+                sectionTitle.textContent = 'Login';
+                submitBtn.textContent = 'SIGN IN';
+                modeLine.innerHTML = "Don't have an account? <button type=\"button\" class=\"text-link\" onclick=\"goToRegisterPage()\">Sign up</button>";
+            }
+            toggleShowPassword();
+        }
+
+        function setRegistrationType(type) {
+            currentRegistrationType = type;
+            const card = document.getElementById('authCard');
+            const individualTab = document.getElementById('individualTypeTab');
+            const groupTab = document.getElementById('groupTypeTab');
+
+            if (type === 'group') {
+                card.classList.remove('reg-individual');
+                card.classList.add('reg-group');
+                individualTab.classList.remove('active');
+                groupTab.classList.add('active');
+            } else {
+                card.classList.remove('reg-group');
+                card.classList.add('reg-individual');
+                groupTab.classList.remove('active');
+                individualTab.classList.add('active');
+            }
+            toggleShowPassword();
+        }
+
+        function toggleShowPassword() {
+            const show = document.getElementById('showPasswordToggle').checked;
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPassword');
+            passwordInput.type = show ? 'text' : 'password';
+            if (confirmInput) confirmInput.type = show ? 'text' : 'password';
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function parseGroupMembers(rawMembersText) {
+            const lines = rawMembersText.split('\n').map((line) => line.trim()).filter(Boolean);
+            const members = [];
+
+            for (const line of lines) {
+                const parts = line.split(',').map((part) => part.trim());
+                if (parts.length < 2) {
+                    throw new Error('Each member must include at least Name and Phone, separated by commas.');
+                }
+                const name = parts[0];
+                const phone = parts[1];
+                const farmSize = parts[2] ? parseFloat(parts[2]) : 0;
+
+                if (!name || !phone) {
+                    throw new Error('Member name and phone are required for each row.');
+                }
+                if (!/^\d{10}$/.test(phone)) {
+                    throw new Error(`Invalid member phone number: ${phone}. Use 10 digits.`);
+                }
+                members.push({ name, phone, farmSize: Number.isFinite(farmSize) ? farmSize : 0 });
+            }
+
+            return members;
+        }
+
+        function getResetIdentifier() {
+            if (currentMode === 'login') {
+                return document.getElementById('loginPhoneOrEmail').value.trim();
+            }
+            if (currentRegistrationType === 'group') {
+                return document.getElementById('leaderEmail').value.trim() || document.getElementById('leaderPhone').value.trim();
+            }
+            return document.getElementById('registerEmail').value.trim() || document.getElementById('individualPhone').value.trim();
+        }
+
+        async function submitAccessForm(event) {
+            event.preventDefault();
+            if (currentMode === 'login') {
+                await handleLogin();
+            } else {
+                await handleRegister();
+            }
+        }
+
+	        async function handleLogin() {
+	            const phoneOrEmail = document.getElementById('loginPhoneOrEmail').value.trim();
+	            const password = document.getElementById('password').value;
+
+            if (!phoneOrEmail || !password) {
+                showAlert('Email/phone and password are required', 'error');
+                return;
+            }
+
+	            try {
+	                const response = await fetch(`${API_BASE}/farmer-profile/login`, {
+	                    method: 'POST',
+	                    headers: { 'Content-Type': 'application/json' },
+	                    body: JSON.stringify({ phoneOrEmail, password })
+	                });
+
+	                const result = await response.json();
+
+	                if (response.ok && result.success) {
+	                    if (result.token) localStorage.setItem('farmerToken', result.token);
+	                    if (result.sessionId) localStorage.setItem('farmerSessionId', result.sessionId);
+	                    if (result.data) localStorage.setItem('farmerData', JSON.stringify(result.data));
+	                    localStorage.removeItem('groupData');
+	                    showAlert('Login successful. Redirecting...', 'success');
+	                    setTimeout(() => {
+	                        window.location.href = '/farmer-dashboard';
+	                    }, 1200);
+	                } else {
+	                    // If farmer login fails, try group login (leader phone/email).
+	                    const groupResp = await fetch(`${API_BASE}/farmer-profile/login-group`, {
+	                        method: 'POST',
+	                        headers: { 'Content-Type': 'application/json' },
+	                        body: JSON.stringify({ phoneOrEmail, password })
+	                    });
+	                    const groupResult = await groupResp.json();
+	                    if (groupResp.ok && groupResult.success) {
+	                        if (groupResult.data) localStorage.setItem('groupData', JSON.stringify(groupResult.data));
+	                        localStorage.removeItem('farmerData');
+	                        localStorage.removeItem('farmerPhone');
+	                        localStorage.removeItem('farmerToken');
+	                        localStorage.removeItem('farmerSessionId');
+	                        showAlert('Group login successful. Redirecting...', 'success');
+	                        setTimeout(() => {
+	                            window.location.href = '/farmer-dashboard';
+	                        }, 1200);
+	                        return;
+	                    }
+	                    showAlert(groupResult.message || result.message || 'Login failed', 'error');
+	                }
+	            } catch (error) {
+	                showAlert(`Login error: ${error.message}`, 'error');
+	            }
+	        }
+
+        async function handleRegister() {
+            if (currentRegistrationType === 'group') {
+                await handleGroupRegister();
+                return;
+            }
+            await handleIndividualRegister();
+        }
+
+        async function handleIndividualRegister() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const phoneNumber = document.getElementById('individualPhone').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const subCounty = document.getElementById('subCounty').value;
+            const soilType = document.getElementById('soilType').value;
+            const farmSize = document.getElementById('farmSize').value.trim();
+            const farmSizeUnit = document.getElementById('farmSizeUnit').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!firstName || !lastName || !phoneNumber || !email || !subCounty || !soilType || !farmSize || !password || !confirmPassword) {
+                showAlert('Fill all required registration fields.', 'error');
+                return;
+            }
+            if (!/^\d{10}$/.test(phoneNumber)) {
+                showAlert('Phone number must be exactly 10 digits.', 'error');
+                return;
+            }
+            if (Number(farmSize) <= 0) {
+                showAlert('Farm size must be greater than 0.', 'error');
+                return;
+            }
+            const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])\S{8,}$/;
+            if (!strongPassword.test(password)) {
+                showAlert('Password must be 8+ chars and include uppercase, lowercase, number and special character.', 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match.', 'error');
+                return;
+            }
+
+            const formData = {
+                firstName,
+                lastName,
+                phoneNumber,
+                email,
+                subCounty,
+                soilType,
+                farmSize,
+                farmSizeUnit,
+                password
+            };
+
+            const photoFile = document.getElementById('registerPhoto').files[0];
+            if (photoFile) {
+                if (!photoFile.type.startsWith('image/')) {
+                    showAlert('Profile photo must be an image file.', 'error');
+                    return;
+                }
+                if (photoFile.size > 5 * 1024 * 1024) {
+                    showAlert('Profile photo must be less than 5MB.', 'error');
+                    return;
+                }
+                formData.passportPhotoUrl = await fileToBase64(photoFile);
+                formData.passportPhotoMimeType = photoFile.type || 'image/jpeg';
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/farmer-profile/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+	                if (response.ok && result.success) {
+	                    localStorage.setItem('farmerData', JSON.stringify({
+	                        farmerId: result?.data?.farmerId,
+	                        firstName,
+	                        lastName,
+                        phoneNumber,
+                        email,
+                        subCounty,
+                        soilType,
+                        farmSize,
+                        farmSizeUnit,
+	                        passportPhotoUrl: result?.data?.passportPhotoUrl || formData.passportPhotoUrl,
+	                        passportPhotoMimeType: result?.data?.passportPhotoMimeType || formData.passportPhotoMimeType
+	                    }));
+	                    localStorage.removeItem('groupData');
+	                    showAlert('Individual registration successful. Redirecting...', 'success');
+	                    setTimeout(() => {
+	                        window.location.href = '/farmer-dashboard';
+	                    }, 1400);
+	                } else {
+                    showAlert(result.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showAlert(`Registration error: ${error.message}`, 'error');
+            }
+        }
+
+	        async function handleGroupRegister() {
+	            const groupName = document.getElementById('groupName').value.trim();
+	            const groupRegNumber = document.getElementById('groupRegNumber').value.trim();
+	            const groupDescription = document.getElementById('groupDescription').value.trim();
+	            const leaderFirstName = document.getElementById('leaderFirstName').value.trim();
+	            const leaderLastName = document.getElementById('leaderLastName').value.trim();
+	            const leaderPhone = document.getElementById('leaderPhone').value.trim();
+	            const leaderEmail = document.getElementById('leaderEmail').value.trim();
+	            const subCounty = document.getElementById('groupSubCounty').value;
+	            const rawMembers = document.getElementById('groupMembers').value;
+	            const password = document.getElementById('password').value;
+	            const confirmPassword = document.getElementById('confirmPassword').value;
+
+	            if (!groupName || !leaderFirstName || !leaderLastName || !leaderPhone || !subCounty || !password || !confirmPassword) {
+	                showAlert('Group name, leader names, leader phone, sub-county, password and confirm password are required.', 'error');
+	                return;
+	            }
+	            if (!/^\d{10}$/.test(leaderPhone)) {
+	                showAlert('Leader phone number must be exactly 10 digits.', 'error');
+	                return;
+	            }
+	            const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])\S{8,}$/;
+	            if (!strongPassword.test(password)) {
+	                showAlert('Password must be 8+ chars and include uppercase, lowercase, number and special character.', 'error');
+	                return;
+	            }
+	            if (password !== confirmPassword) {
+	                showAlert('Passwords do not match.', 'error');
+	                return;
+	            }
+
+            let members;
+            try {
+                members = parseGroupMembers(rawMembers);
+            } catch (error) {
+                showAlert(error.message, 'error');
+                return;
+            }
+
+            if (!members.length) {
+                showAlert('At least one group member is required.', 'error');
+                return;
+            }
+
+	            const formData = {
+	                groupName,
+	                groupRegNumber: groupRegNumber || undefined,
+	                groupDescription: groupDescription || undefined,
+	                leaderFirstName,
+	                leaderLastName,
+	                leaderPhone,
+	                leaderEmail: leaderEmail || undefined,
+	                subCounty,
+	                members,
+	                password
+	            };
+
+            const leaderPhotoFile = document.getElementById('groupLeaderPhoto').files[0];
+            if (leaderPhotoFile) {
+                if (!leaderPhotoFile.type.startsWith('image/')) {
+                    showAlert('Leader photo must be an image file.', 'error');
+                    return;
+                }
+                if (leaderPhotoFile.size > 5 * 1024 * 1024) {
+                    showAlert('Leader photo must be less than 5MB.', 'error');
+                    return;
+                }
+                formData.leaderPhotoUrl = await fileToBase64(leaderPhotoFile);
+                formData.leaderPhotoMimeType = leaderPhotoFile.type || 'image/jpeg';
+            }
+
+            Object.keys(formData).forEach((key) => formData[key] === undefined && delete formData[key]);
+
+            try {
+                const response = await fetch(`${API_BASE}/farmer-profile/register-group`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+	                const result = await response.json();
+	
+	                if (response.ok && result.success) {
+		                    // Persist the group profile so the farmer dashboard can render it after redirect.
+		                    try {
+		                        const groupPayload = { ...(result.data || formData || {}) };
+		                        delete groupPayload.password;
+		                        delete groupPayload.confirmPassword;
+		                        try {
+		                            localStorage.setItem('groupData', JSON.stringify(groupPayload));
+		                        } catch (storageError) {
+		                            // Fallback: omit large photo blobs to stay under localStorage limits.
+		                            const leanPayload = { ...(groupPayload || {}) };
+		                            delete leanPayload.leader_photo_url;
+		                            delete leanPayload.leader_photo_mime_type;
+		                            delete leanPayload.leaderPhotoUrl;
+		                            delete leanPayload.leaderPhotoMimeType;
+		                            localStorage.setItem('groupData', JSON.stringify(leanPayload));
+		                        }
+	                        localStorage.removeItem('farmerData');
+	                        localStorage.removeItem('farmerPhone');
+	                    } catch (e) {
+	                        // If storage fails (quota/private mode), the redirect still works; the dashboard will show a fallback.
+	                        console.warn('Failed to persist group profile in localStorage:', e);
+	                    }
+	                    showAlert('Group registration successful. Redirecting...', 'success');
+	                    setTimeout(() => {
+	                        window.location.href = '/farmer-dashboard';
+	                    }, 1400);
+	                } else {
+                    showAlert(result.message || 'Group registration failed', 'error');
+                }
+            } catch (error) {
+                showAlert(`Group registration error: ${error.message}`, 'error');
+            }
+        }
+
+        function toggleForgotPanel() {
+            const panel = document.getElementById('forgotPanel');
+            panel.classList.toggle('show');
+            const resetField = document.getElementById('resetPhoneOrEmail');
+            const identifier = getResetIdentifier();
+            if (!resetField.value && identifier) {
+                resetField.value = identifier;
+            }
+        }
+
+        async function requestPasswordResetCode() {
+            const phoneOrEmail = document.getElementById('resetPhoneOrEmail').value.trim();
+            if (!phoneOrEmail) {
+                showAlert('Enter phone/email for reset code request.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/farmer-profile/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phoneOrEmail })
+                });
+
+                const raw = await response.text();
+                let result = {};
+                try {
+                    result = raw ? JSON.parse(raw) : {};
+                } catch (error) {
+                    result = {};
+                }
+
+                if (response.ok && result.success) {
+                    showAlert(result.message || 'Reset code sent to your email.', 'success');
+                } else {
+                    showAlert(result.message || raw || `Request failed (${response.status})`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Could not request reset code: ${error.message}`, 'error');
+            }
+        }
+
+        async function submitPasswordReset() {
+            const phoneOrEmail = document.getElementById('resetPhoneOrEmail').value.trim();
+            const resetCode = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (!phoneOrEmail || !resetCode || !newPassword || !confirmNewPassword) {
+                showAlert('Fill all reset password fields.', 'error');
+                return;
+            }
+            const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])\S{8,}$/;
+            if (!strongPassword.test(newPassword)) {
+                showAlert('New password must be 8+ chars and include uppercase, lowercase, number and special character.', 'error');
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                showAlert('New passwords do not match.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/farmer-profile/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phoneOrEmail, resetCode, newPassword })
+                });
+
+                const raw = await response.text();
+                let result = {};
+                try {
+                    result = raw ? JSON.parse(raw) : {};
+                } catch (error) {
+                    result = {};
+                }
+
+                if (response.ok && result.success) {
+                    showAlert('Password reset successful. You can now login.', 'success');
+                    document.getElementById('resetCode').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                    setMode('login');
+                } else {
+                    showAlert(result.message || raw || `Request failed (${response.status})`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Could not reset password: ${error.message}`, 'error');
+            }
+        }
+
+        (function init() {
+            const params = new URLSearchParams(window.location.search);
+            const requestedMode = params.get('mode');
+            const requestedType = params.get('type');
+
+            setRegistrationType(requestedType === 'group' ? 'group' : 'individual');
+            if (requestedMode === 'register') {
+                setMode('register');
+            } else {
+                setMode('login');
+            }
+        })();
+    </script>
+</body>
+</html>

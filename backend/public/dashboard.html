@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fahamu Shamba Farm Insights</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #eef5f0;
+      --panel: #ffffff;
+      --ink: #1d2b23;
+      --muted: #5a6f64;
+      --line: #d6e3db;
+      --brand: #145a3b;
+      --brand-2: #248f63;
+      --accent: #f2a33a;
+      --danger: #b42318;
+      --warning: #b86a00;
+      --ok: #12733d;
+      --shadow: 0 10px 30px rgba(18, 46, 33, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: "Manrope", "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(36, 143, 99, 0.2), transparent 34%),
+        radial-gradient(circle at 100% 0%, rgba(242, 163, 58, 0.16), transparent 26%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 18px 24px;
+      background: linear-gradient(120deg, #0f4b31, #1b6f4a);
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h1 {
+      font-size: 1.35rem;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+
+    .actionbar {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .actionbar .btn {
+      padding: 8px 12px;
+      font-size: 0.88rem;
+    }
+
+    .chip {
+      border: 1px solid rgba(255,255,255,0.38);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.12);
+      white-space: nowrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 14px;
+      min-height: 44px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+      transition: transform 0.15s ease, opacity 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+    .btn-light {
+      background: #fff;
+      color: #12442f;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.28);
+    }
+
+    .container {
+      max-width: 1460px;
+      margin: 20px auto 28px;
+      padding: 0 14px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .tabs {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: 1px solid transparent;
+      background: #edf4ef;
+      color: #264735;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: inherit;
+    }
+
+    .tab-btn.active {
+      background: #dff1e7;
+      border-color: #b8d8c5;
+      color: #10442d;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: grid; gap: 16px; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .metric-title {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      line-height: 1;
+      font-weight: 800;
+      color: #154f35;
+      margin-bottom: 6px;
+    }
+
+    .metric-note {
+      color: #60766a;
+      font-size: 0.82rem;
+    }
+
+    .section-title {
+      color: #13452f;
+      font-size: 1.03rem;
+      margin-bottom: 10px;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .layout-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      min-height: 280px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: #f2f8f4;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid #ebf1ed;
+      vertical-align: top;
+    }
+
+    th {
+      color: #204734;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    td code {
+      background: #edf4ef;
+      border: 1px solid #d8e6dd;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-size: 0.82rem;
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    .ok { color: var(--ok); background: #eaf8ef; border-color: #bde4ca; }
+    .warn { color: var(--warning); background: #fff8eb; border-color: #f2ddad; }
+    .bad { color: var(--danger); background: #fff0ef; border-color: #f2c6c2; }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: #426052;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #cadcd0;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .analysis-result {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-item {
+      border: 1px solid #d9e7df;
+      border-left: 4px solid var(--brand-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: #f8fcfa;
+      font-size: 0.9rem;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: #6a7e74;
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+
+    .welcome-card {
+      display: grid;
+      gap: 10px;
+      background: linear-gradient(130deg, #f6fbf8, #eef7f2);
+      border: 1px solid #cfe5d8;
+    }
+
+    .welcome-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #13452f;
+    }
+
+    .welcome-text {
+      color: #355748;
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1100px) {
+      .layout-2,
+      .layout-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .actionbar {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        padding: 12px;
+      }
+
+      .topbar h1 {
+        font-size: 1.1rem;
+      }
+
+      .container {
+        padding: 0 10px;
+        margin: 12px auto 22px;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+      }
+
+      .tab-btn {
+        min-width: 120px;
+      }
+
+      .actionbar {
+        justify-content: stretch;
+      }
+
+      .actionbar .btn,
+      .actionbar a.btn {
+        flex: 1 1 100%;
+      }
+
+      table {
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1><img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo" style="width:44px;height:44px;object-fit:contain;border-radius:50%;background:#fff;padding:6px;"> Farm Insights</h1>
+    <div class="topbar-meta">
+      <span class="chip" id="lastUpdated">Last updated: --</span>
+      <span class="chip" id="apiHealth">Service: checking...</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview">My Insights</button>
+      <button class="tab-btn" data-tab="market">Market</button>
+      <button class="tab-btn" data-tab="weather">Weather</button>
+    </div>
+
+    <div class="actionbar">
+      <button class="btn btn-light" id="refreshBtn">Refresh Data</button>
+      <button class="btn btn-ghost" id="autoRefreshBtn">Auto: ON</button>
+      <a class="btn btn-light" href="/farmer-dashboard">My Farm Dashboard</a>
+    </div>
+
+    <section id="tab-overview" class="tab-panel active">
+      <article class="card welcome-card" id="welcomeCard">
+        <div class="welcome-title">Welcome to Farm Insights</div>
+        <div class="welcome-text">Loading your profile status...</div>
+      </article>
+
+      <div class="kpi-grid">
+        <article class="card"><div class="metric-title">Total Recommendations</div><div class="metric-value" id="totalPredictions">0</div><div class="metric-note">advice generated so far</div></article>
+        <article class="card"><div class="metric-title">Farmers on Platform</div><div class="metric-value" id="totalFarmers">0</div><div class="metric-note">active registered farmers</div></article>
+        <article class="card"><div class="metric-title">Most Recommended Crop</div><div class="metric-value" id="topCrop">-</div><div class="metric-note">crop currently trending</div></article>
+        <article class="card"><div class="metric-title">Today Recommendations</div><div class="metric-value" id="dailyRate">0</div><div class="metric-note">recommendations in last 24h</div></article>
+        <article class="card"><div class="metric-title">Farmer Return Rate (30d)</div><div class="metric-value" id="retentionRate">0%</div><div class="metric-note">farmers returning monthly</div></article>
+        <article class="card"><div class="metric-title">Average Yield Improvement</div><div class="metric-value" id="yieldImprovement">0%</div><div class="metric-note">reported yield gain</div></article>
+        <article class="card"><div class="metric-title">County Recommendation Coverage</div><div class="metric-value" id="recommendationCoverage">0%</div><div class="metric-note">coverage across sub-counties</div></article>
+        <article class="card"><div class="metric-title">Farmer Feedback Coverage</div><div class="metric-value" id="feedbackCoverage">0%</div><div class="metric-note">feedback linked to predictions</div></article>
+      </div>
+
+      <div class="layout-2">
+        <article class="card">
+          <div class="section-title">Top Recommended Crops</div>
+          <div class="canvas-wrap"><canvas id="topCropsChart"></canvas></div>
+        </article>
+        <article class="card">
+          <div class="section-title">Recommendation Quality by Context</div>
+          <div class="canvas-wrap"><canvas id="contextQualityChart"></canvas></div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="section-title">Recent Farm Recommendations <span class="subtle">Latest 25</span></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Crop</th>
+                <th>Sub-county</th>
+                <th>Soil</th>
+                <th>Season</th>
+                <th>Confidence</th>
+              </tr>
+            </thead>
+            <tbody id="recentPredictionsTbody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="tab-market" class="tab-panel">
+      <div class="kpi-grid">
+        <article class="card"><div class="metric-title">Market Data Source</div><div class="metric-value" id="marketSource">-</div><div class="metric-note">live feed source</div></article>
+        <article class="card"><div class="metric-title">Last Market Update</div><div class="metric-value" id="marketUpdated">-</div><div class="metric-note">latest price refresh time</div></article>
+        <article class="card"><div class="metric-title">Tracked Crops</div><div class="metric-value" id="marketCrops">0</div><div class="metric-note">crop rows monitored</div></article>
+        <article class="card"><div class="metric-title">Average Price</div><div class="metric-value" id="marketAvgPrice">KSh 0</div><div class="metric-note">mean across Siaya sub-counties</div></article>
+      </div>
+
+      <div class="layout-2">
+        <article class="card">
+          <div class="section-title">Average Price by Crop</div>
+          <div class="canvas-wrap"><canvas id="marketChart"></canvas></div>
+        </article>
+        <article class="card">
+          <div class="section-title">Top Market Opportunities <button class="btn btn-light" id="marketRefreshBtn">Refresh Market</button></div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Best Sub-county</th>
+                  <th>Price</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody id="marketTopTbody"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="section-title">Real-time Market Price Matrix <span class="subtle" id="marketRealtimeNote">updating...</span></div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr id="marketMatrixHead"></tr>
+            </thead>
+            <tbody id="marketMatrixBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section id="tab-weather" class="tab-panel">
+      <div class="kpi-grid">
+        <article class="card"><div class="metric-title">Last Weather Update</div><div class="metric-value" id="weatherUpdated">-</div><div class="metric-note">latest API refresh time</div></article>
+        <article class="card"><div class="metric-title">Average Temperature</div><div class="metric-value" id="weatherAvgTemp">0C</div><div class="metric-note">across Siaya sub-counties</div></article>
+        <article class="card"><div class="metric-title">Average Humidity</div><div class="metric-value" id="weatherAvgHumidity">0%</div><div class="metric-note">current relative humidity</div></article>
+        <article class="card"><div class="metric-title">Rain Risk (Now)</div><div class="metric-value" id="weatherRainRisk">Low</div><div class="metric-note">county-wide precipitation signal</div></article>
+      </div>
+
+      <div class="layout-2">
+        <article class="card">
+          <div class="section-title">Current Temperature by Sub-county</div>
+          <div class="canvas-wrap"><canvas id="weatherTempChart"></canvas></div>
+        </article>
+        <article class="card">
+          <div class="section-title">Current Humidity by Sub-county <button class="btn btn-light" id="weatherRefreshBtn">Refresh Weather</button></div>
+          <div class="canvas-wrap"><canvas id="weatherHumidityChart"></canvas></div>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="section-title">Real-time Weather Feed (Siaya)</div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Sub-county</th>
+                <th>Condition</th>
+                <th>Temp</th>
+                <th>Humidity</th>
+                <th>Precip</th>
+                <th>Wind</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="weatherNowTbody"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-note">Fahamu Shamba Farm Insights - recommendations, market data, weather and performance trends.</div>
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin;
+    const SIAYA_SUBCOUNTIES = ['bondo', 'ugunja', 'yala', 'gem', 'alego'];
+    const state = {
+      autoRefresh: true,
+      timerId: null,
+      charts: {},
+      latestMetrics: null,
+      latestKpi: null,
+      latestStats: null,
+      latestEngineMetrics: null
+    };
+
+    function ensureChart(key, canvasId, config) {
+      if (state.charts[key]) {
+        state.charts[key].destroy();
+      }
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      state.charts[key] = new Chart(ctx, config);
+    }
+
+    async function fetchJson(url, fallback = null) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.warn(`Failed: ${url}`, error.message);
+        return fallback;
+      }
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function fmtPct(value, decimals = 1) {
+      const num = Number(value || 0);
+      return `${num.toFixed(decimals)}%`;
+    }
+
+    function fmtNum(value) {
+      return Number(value || 0).toLocaleString();
+    }
+
+    function fmtShortTime(value) {
+      if (!value) return '-';
+      const dt = new Date(value);
+      if (Number.isNaN(dt.getTime())) return '-';
+      return dt.toLocaleTimeString();
+    }
+
+    function titleCase(value = '') {
+      return String(value)
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (m) => m.toUpperCase());
+    }
+
+    function setHealthChip(healthy) {
+      const healthChip = document.getElementById('apiHealth');
+      if (!healthChip) return;
+      healthChip.textContent = healthy ? 'Service: healthy' : 'Service: degraded';
+      healthChip.style.background = healthy ? 'rgba(20, 160, 90, 0.25)' : 'rgba(180, 35, 24, 0.28)';
+    }
+
+    function getStoredFarmer() {
+      const keys = ['farmerData', 'farmerProfile', 'loggedInFarmer'];
+      for (const key of keys) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') return parsed;
+        } catch (error) {
+          console.warn(`Invalid farmer payload in ${key}`);
+        }
+      }
+      return null;
+    }
+
+    function renderWelcomeCard() {
+      const card = document.getElementById('welcomeCard');
+      if (!card) return;
+      const farmer = getStoredFarmer();
+      const name = farmer?.farmerName || farmer?.name || farmer?.fullName || farmer?.firstName || '';
+
+      if (!farmer) {
+        card.innerHTML = `
+          <div class="welcome-title">Start with your farmer profile</div>
+          <div class="welcome-text">You can still explore market and weather insights now, but creating or signing in to your account gives you personalized recommendations and progress tracking.</div>
+          <div class="welcome-actions">
+            <a class="btn btn-light" href="/farmer-registration">Create Farmer Account</a>
+            <a class="btn btn-ghost" href="/farmer-registration?tab=login">Sign In</a>
+          </div>
+        `;
+        return;
+      }
+
+      card.innerHTML = `
+        <div class="welcome-title">Karibu${name ? `, ${name}` : ''}</div>
+        <div class="welcome-text">Your profile is active. Use this page to review trends, then open your dashboard for personalized action steps and recommendations.</div>
+        <div class="welcome-actions">
+          <a class="btn btn-light" href="/farmer-dashboard">Open My Dashboard</a>
+        </div>
+      `;
+    }
+
+    function renderOverview() {
+      const stats = state.latestStats || {};
+      const kpi = state.latestKpi || {};
+      const metrics = state.latestMetrics || {};
+      const engine = state.latestEngineMetrics || {};
+
+      setText('totalPredictions', fmtNum(stats.totalPredictions));
+      setText('totalFarmers', fmtNum(stats.totalFarmers));
+      setText('topCrop', stats.topCrop || '-');
+      setText('dailyRate', fmtNum(kpi.recommendations?.dailyRecommendationRate));
+      setText('retentionRate', fmtPct(kpi.retention?.retention30DayRate, 1));
+      setText('yieldImprovement', fmtPct(kpi.yield?.avgActualImprovement, 1));
+      setText('recommendationCoverage', fmtPct(metrics.recommendations?.recommendationCoveragePercent, 1));
+      setText('feedbackCoverage', fmtPct((engine.feedbackCoverage || 0) * 100, 1));
+
+      const topCrops = kpi.recommendations?.topCrops || [];
+      ensureChart('topCrops', 'topCropsChart', {
+        type: 'doughnut',
+        data: {
+          labels: topCrops.slice(0, 6).map((c) => c.crop),
+          datasets: [{
+            data: topCrops.slice(0, 6).map((c) => c.recommendedCount),
+            backgroundColor: ['#145a3b', '#248f63', '#f2a33a', '#8ba938', '#5f7f6f', '#b86a00']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      const contexts = engine.topContextPerformance || [];
+      ensureChart('contextQuality', 'contextQualityChart', {
+        type: 'bar',
+        data: {
+          labels: contexts.map((c) => `${c.subCounty}/${c.soilType}/${c.season}`),
+          datasets: [{
+            label: 'Helpful Rate (%)',
+            data: contexts.map((c) => Math.round((Number(c.helpfulRate || 0)) * 100)),
+            backgroundColor: '#248f63'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, max: 100 } }
+        }
+      });
+    }
+
+    function renderRecentPredictions(predictions) {
+      const tbody = document.getElementById('recentPredictionsTbody');
+      tbody.innerHTML = '';
+      (predictions || []).slice(0, 25).forEach((p) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${new Date(p.created_at).toLocaleString()}</td>
+          <td>${p.predicted_crop || '-'}</td>
+          <td>${p.sub_county || '-'}</td>
+          <td>${p.soil_type || '-'}</td>
+          <td>${p.season || '-'}</td>
+          <td>${Number(p.confidence || 0)}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (!tbody.children.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="6" class="subtle">No predictions available.</td>';
+        tbody.appendChild(tr);
+      }
+    }
+
+    function renderMarket(market = {}) {
+      const prices = Array.isArray(market.prices) ? market.prices : [];
+      const source = market.source || '-';
+      const timestamp = market.timestamp || null;
+
+      const averages = prices.map((row) => {
+        const vals = SIAYA_SUBCOUNTIES
+          .map((sc) => Number(row[sc] || 0))
+          .filter((n) => Number.isFinite(n) && n > 0);
+        const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+        return { ...row, avg };
+      });
+      const top = [...averages].sort((a, b) => b.avg - a.avg).slice(0, 8);
+
+      const allValues = prices.flatMap((row) => SIAYA_SUBCOUNTIES.map((sc) => Number(row[sc] || 0))).filter((v) => v > 0);
+      const globalAvg = allValues.length ? allValues.reduce((a, b) => a + b, 0) / allValues.length : 0;
+
+      setText('marketSource', source === 'external_market_api' ? 'External API' : titleCase(source));
+      setText('marketUpdated', fmtShortTime(timestamp));
+      setText('marketCrops', fmtNum(prices.length));
+      setText('marketAvgPrice', `KSh ${Math.round(globalAvg)}`);
+      setText('marketRealtimeNote', `updated ${fmtShortTime(timestamp)}`);
+
+      ensureChart('market', 'marketChart', {
+        type: 'bar',
+        data: {
+          labels: top.map((p) => p.crop),
+          datasets: [{
+            label: 'Average price (KSh/kg)',
+            data: top.map((p) => Number(p.avg || 0)),
+            backgroundColor: '#f2a33a'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      const topBody = document.getElementById('marketTopTbody');
+      topBody.innerHTML = '';
+      top.slice(0, 6).forEach((row) => {
+        const bestSubCounty = SIAYA_SUBCOUNTIES.reduce((best, sc) => {
+          const price = Number(row[sc] || 0);
+          if (!best || price > best.price) return { subCounty: sc, price };
+          return best;
+        }, null);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.crop || '-'}</td>
+          <td>${titleCase(bestSubCounty?.subCounty || '-')}</td>
+          <td>KSh ${Math.round(bestSubCounty?.price || 0)}</td>
+          <td>${titleCase(row.trend || 'stable')}</td>
+        `;
+        topBody.appendChild(tr);
+      });
+      if (!topBody.children.length) {
+        topBody.innerHTML = '<tr><td colspan="4" class="subtle">No market data available.</td></tr>';
+      }
+
+      const head = document.getElementById('marketMatrixHead');
+      head.innerHTML = '<th>Crop</th>' + SIAYA_SUBCOUNTIES.map((sc) => `<th>${titleCase(sc)}</th>`).join('') + '<th>Trend</th>';
+      const body = document.getElementById('marketMatrixBody');
+      body.innerHTML = '';
+      prices.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.crop || '-'}</td>
+          ${SIAYA_SUBCOUNTIES.map((sc) => `<td>KSh ${fmtNum(row[sc] || 0)}</td>`).join('')}
+          <td>${titleCase(row.trend || 'stable')}</td>
+        `;
+        body.appendChild(tr);
+      });
+      if (!body.children.length) {
+        body.innerHTML = `<tr><td colspan="${SIAYA_SUBCOUNTIES.length + 2}" class="subtle">No market matrix data available.</td></tr>`;
+      }
+    }
+
+    async function loadWeatherRealtime() {
+      const responses = await Promise.all(
+        SIAYA_SUBCOUNTIES.map(async (subCounty) => {
+          const resp = await fetchJson(`${API_BASE}/api/weather/current/${encodeURIComponent(subCounty)}?fresh=1`, null);
+          if (!resp || !resp.success || !resp.data) {
+            return { subCounty, ok: false, data: null, lastUpdated: null };
+          }
+          return { subCounty, ok: true, data: resp.data, lastUpdated: resp.last_updated || resp.data.timestamp };
+        })
+      );
+      renderWeather(responses);
+    }
+
+    function renderWeather(rows = []) {
+      const okRows = rows.filter((r) => r.ok && r.data);
+      const avgTemp = okRows.length
+        ? okRows.reduce((acc, row) => acc + Number(row.data.temperature || 0), 0) / okRows.length
+        : 0;
+      const avgHumidity = okRows.length
+        ? okRows.reduce((acc, row) => acc + Number(row.data.humidity || 0), 0) / okRows.length
+        : 0;
+      const avgPrecip = okRows.length
+        ? okRows.reduce((acc, row) => acc + Number(row.data.precipitation || 0), 0) / okRows.length
+        : 0;
+      const latestTs = okRows.map((r) => r.lastUpdated).filter(Boolean).sort().pop();
+
+      setText('weatherUpdated', fmtShortTime(latestTs));
+      setText('weatherAvgTemp', `${Math.round(avgTemp)}C`);
+      setText('weatherAvgHumidity', `${Math.round(avgHumidity)}%`);
+      setText('weatherRainRisk', avgPrecip >= 1.5 ? 'High' : avgPrecip >= 0.5 ? 'Medium' : 'Low');
+
+      ensureChart('weatherTemp', 'weatherTempChart', {
+        type: 'bar',
+        data: {
+          labels: rows.map((r) => titleCase(r.subCounty)),
+          datasets: [{
+            label: 'Temperature (C)',
+            data: rows.map((r) => Number(r.data?.temperature || 0)),
+            backgroundColor: '#248f63'
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+
+      ensureChart('weatherHumidity', 'weatherHumidityChart', {
+        type: 'line',
+        data: {
+          labels: rows.map((r) => titleCase(r.subCounty)),
+          datasets: [{
+            label: 'Humidity (%)',
+            data: rows.map((r) => Number(r.data?.humidity || 0)),
+            borderColor: '#145a3b',
+            backgroundColor: 'rgba(20,90,59,0.14)',
+            fill: true,
+            tension: 0.28
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      const tbody = document.getElementById('weatherNowTbody');
+      tbody.innerHTML = '';
+      rows.forEach((row) => {
+        const tr = document.createElement('tr');
+        if (!row.ok || !row.data) {
+          tr.innerHTML = `
+            <td>${titleCase(row.subCounty)}</td>
+            <td colspan="6" class="subtle">Weather feed unavailable for this sub-county right now.</td>
+          `;
+          tbody.appendChild(tr);
+          return;
+        }
+
+        tr.innerHTML = `
+          <td>${titleCase(row.subCounty)}</td>
+          <td>${row.data.icon || ''} ${row.data.description || '-'}</td>
+          <td>${row.data.temperature ?? '-'} C</td>
+          <td>${row.data.humidity ?? '-'}%</td>
+          <td>${row.data.precipitation ?? '-'} mm</td>
+          <td>${row.data.wind_speed ?? '-'} km/h</td>
+          <td>${fmtShortTime(row.lastUpdated)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function refreshDashboard() {
+      const [health, statsResp, metricsResp, kpiResp, engineResp, predictionsResp, marketResp] = await Promise.all([
+        fetchJson(`${API_BASE}/api/health`, null),
+        fetchJson(`${API_BASE}/api/stats`, null),
+        fetchJson(`${API_BASE}/api/metrics`, null),
+        fetchJson(`${API_BASE}/api/kpi`, null),
+        fetchJson(`${API_BASE}/api/recommendation-engine/metrics?days=90`, null),
+        fetchJson(`${API_BASE}/api/predictions?limit=50`, null),
+        fetchJson(`${API_BASE}/api/market-prices?fresh=1`, null)
+      ]);
+
+      setHealthChip(Boolean(health?.success));
+      setText('lastUpdated', `Last updated: ${new Date().toLocaleString()}`);
+
+      state.latestStats = statsResp?.data || {};
+      state.latestMetrics = metricsResp || {};
+      state.latestKpi = kpiResp || {};
+      state.latestEngineMetrics = engineResp?.data || {};
+
+      renderOverview();
+      renderRecentPredictions(predictionsResp?.predictions || []);
+      renderMarket(marketResp?.data || {});
+      await loadWeatherRealtime();
+    }
+
+    function setupTabs() {
+      const buttons = Array.from(document.querySelectorAll('.tab-btn'));
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          document.querySelectorAll('.tab-panel').forEach((panel) => panel.classList.remove('active'));
+          const key = btn.dataset.tab;
+          document.getElementById(`tab-${key}`).classList.add('active');
+        });
+      });
+    }
+
+    function setupActions() {
+      document.getElementById('refreshBtn').addEventListener('click', refreshDashboard);
+      document.getElementById('autoRefreshBtn').addEventListener('click', (e) => {
+        state.autoRefresh = !state.autoRefresh;
+        e.target.textContent = `Auto: ${state.autoRefresh ? 'ON' : 'OFF'}`;
+      });
+      document.getElementById('marketRefreshBtn').addEventListener('click', refreshDashboard);
+      document.getElementById('weatherRefreshBtn').addEventListener('click', loadWeatherRealtime);
+    }
+
+    function startAutoRefresh() {
+      if (state.timerId) clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        if (!state.autoRefresh) return;
+        refreshDashboard();
+      }, 30000);
+    }
+
+    setupTabs();
+    setupActions();
+    renderWelcomeCard();
+    startAutoRefresh();
+    refreshDashboard();
+  </script>
+</body>
+</html>

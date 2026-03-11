@@ -1,0 +1,10 @@
+.env
+backups/
+coverage/
+server.log
+fahamu_shamba.db
+fahamu_shamba.db-wal
+fahamu_shamba.db-shm
+*.db
+*.db-wal
+*.db-shm

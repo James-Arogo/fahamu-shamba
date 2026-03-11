@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahamu Shamba - Crop Prediction</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--primary-dark);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .page-title p {
+            color: var(--text-light);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Layout Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .prediction-section {
+            grid-column: 1 / 2;
+        }
+        
+        .market-section {
+            grid-column: 2 / 3;
+        }
+        
+        .recent-section {
+            grid-column: 1 / 3;
+        }
+        
+        /* Prediction Form */
+        .prediction-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-block {
+            width: 100%;
+            grid-column: 1 / 3;
+        }
+        
+        /* Weather Overview */
+        .weather-overview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .weather-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+        
+        .weather-details p {
+            margin-bottom: 5px;
+        }
+        
+        /* Market Overview */
+        .market-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .market-item:last-child {
+            border-bottom: none;
+        }
+        
+        .crop-name {
+            font-weight: 500;
+        }
+        
+        .crop-price {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Recent Predictions */
+        .recent-predictions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .prediction-crop {
+            font-weight: 500;
+        }
+        
+        .prediction-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .prediction-probability {
+            background-color: var(--primary-light);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        /* Product Recommendations */
+        .product-recommendations {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .product-category {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .product-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid var(--primary-light);
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        
+        .product-dosage {
+            font-size: 0.85rem;
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-section, .market-section, .recent-section {
+                grid-column: 1 / 2;
+            }
+            
+            .prediction-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-block {
+                grid-column: 1 / 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .nav-item {
+                white-space: nowrap;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1><img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo" style="width:58px;height:58px;object-fit:contain;border-radius:50%;background:#fff;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.22);border:2px solid rgba(255,255,255,0.85);vertical-align:middle;"> Fahamu Shamba</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                <li class="nav-item active"><i class="fas fa-seedling"></i> Crop Prediction</li>
+                <li class="nav-item"><i class="fas fa-chart-line"></i> Market Trends</li>
+                <li class="nav-item"><i class="fas fa-cloud-sun"></i> Weather</li>
+                <li class="nav-item"><i class="fas fa-tractor"></i> Farming Tips</li>
+                <li class="nav-item"><i class="fas fa-shopping-cart"></i> Marketplace</li>
+                <li class="nav-item"><i class="fas fa-cog"></i> Settings</li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Crop Prediction</h1>
+                    <p>Get AI-powered crop recommendations for your farm</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <span>John Doe</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Prediction Section -->
+                <div class="prediction-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Quick Crop Prediction</h2>
+                        </div>
+                        <p>Get instant crop recommendations based on your farm conditions</p>
+                        
+                        <form id="predictionForm" class="prediction-form">
+                            <div class="form-group">
+                                <label for="location">Location/Region</label>
+                                <select id="location" class="form-control">
+                                    <option value="">Select your region</option>
+                                    <option value="northern">Northern Region</option>
+                                    <option value="central">Central Region</option>
+                                    <option value="southern">Southern Region</option>
+                                    <option value="eastern">Eastern Region</option>
+                                    <option value="western">Western Region</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="soilType">Soil Type</label>
+                                <select id="soilType" class="form-control">
+                                    <option value="">Select soil type</option>
+                                    <option value="loamy">Loamy Soil</option>
+                                    <option value="clay">Clay Soil</option>
+                                    <option value="sandy">Sandy Soil</option>
+                                    <option value="red">Red Soil</option>
+                                    <option value="black">Black Soil</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="season">Season</label>
+                                <select id="season" class="form-control">
+                                    <option value="">Select season</option>
+                                    <option value="spring">Spring</option>
+                                    <option value="summer">Summer</option>
+                                    <option value="monsoon">Monsoon</option>
+                                    <option value="autumn">Autumn</option>
+                                    <option value="winter">Winter</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="waterAvailability">Water Availability</label>
+                                <select id="waterAvailability" class="form-control">
+                                    <option value="">Select availability</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                    <option value="irrigation">Irrigation Available</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="temperature">Average Temperature (°C)</label>
+                                <input type="number" id="temperature" class="form-control" placeholder="e.g., 25">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="rainfall">Rainfall (mm)</label>
+                                <input type="number" id="rainfall" class="form-control" placeholder="e.g., 120">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phLevel">pH Level</label>
+                                <input type="number" id="phLevel" class="form-control" placeholder="e.g., 6.5" step="0.1" min="0" max="14">
+                            </div>
+                            
+                            <button type="button" class="btn btn-block" onclick="predictCrops()">
+                                <i class="fas fa-calculator"></i> Start Prediction
+                            </button>
+                        </form>
+                        
+                        <!-- Weather Overview -->
+                        <div class="weather-overview">
+                            <div class="weather-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="weather-details">
+                                <p><strong>Mainly clear</strong></p>
+                                <p>Humidity: 75% | Precipitation: 3.24mm</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Recommendations Section -->
+                    <div id="productRecommendations" class="product-recommendations">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Recommended Farm Products</h2>
+                                <span id="selectedCropName">for Selected Crop</span>
+                            </div>
+                            
+                            <div class="product-category">
+                                <h3 class="category-title"><i class="fas fa-vial"></i> Fertilizers</h3>
+                                <div id="fertilizerList" class="product-list">
+                                    <!-- Fertilizers will be dynamically inserted here -->
+                                </div>
+                            </div>
+                            
+                            <div class="product-category">
+                                <h3 class="category-title"><i class="fas fa-biohazard"></i> Pesticides & Insecticides</h3>
+                                <div id="pesticideList" class="product-list">
+                                    <!-- Pesticides will be dynamically inserted here -->
+                                </div>
+                            </div>
+                            
+                            <div class="product-category">
+                                <h3 class="category-title"><i class="fas fa-pills"></i> Fungicides & Herbicides</h3>
+                                <div id="fungicideList" class="product-list">
+                                    <!-- Fungicides will be dynamically inserted here -->
+                                </div>
+                            </div>
+                            
+                            <div class="product-category">
+                                <h3 class="category-title"><i class="fas fa-tools"></i> Farming Tools</h3>
+                                <div id="toolList" class="product-list">
+                                    <!-- Tools will be dynamically inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Market Overview Section -->
+                <div class="market-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Market Overview</h2>
+                        </div>
+                        <p>Current prices in your region</p>
+                        
+                        <div class="market-items">
+                            <div class="market-item">
+                                <span class="crop-name">Beans/kg</span>
+                                <span class="crop-price">KES 85</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="crop-name">Maize/kg</span>
+                                <span class="crop-price">KES 65</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="crop-name">Sorghum/kg</span>
+                                <span class="crop-price">KES 95</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="crop-name">Wheat/kg</span>
+                                <span class="crop-price">KES 110</span>
+                            </div>
+                            <div class="market-item">
+                                <span class="crop-name">Rice/kg</span>
+                                <span class="crop-price">KES 120</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Predictions Section -->
+                <div class="recent-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Predictions</h2>
+                        </div>
+                        <p>Your last crop recommendations</p>
+                        
+                        <div id="recentPredictions" class="recent-predictions">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No recent predictions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample crop data with product recommendations
+        const cropData = {
+            "Rice": {
+                probability: 85,
+                fertilizers: [
+                    { name: "Urea", description: "Nitrogen fertilizer for growth", dosage: "100-150 kg/ha" },
+                    { name: "DAP", description: "Phosphorus fertilizer for root development", dosage: "60-80 kg/ha" },
+                    { name: "Potassium Sulfate", description: "Potassium for grain quality", dosage: "40-60 kg/ha" }
+                ],
+                pesticides: [
+                    { name: "Chlorpyrifos", description: "Controls stem borers", dosage: "1.5-2.0 L/ha" },
+                    { name: "Imidacloprid", description: "Effective against leafhoppers", dosage: "100-150 ml/ha" }
+                ],
+                fungicides: [
+                    { name: "Tricyclazole", description: "Controls blast disease", dosage: "0.5-1.0 kg/ha" },
+                    { name: "Carbendazim", description: "Controls sheath blight", dosage: "500 g/ha" }
+                ],
+                tools: ["Paddy Transplanter", "Combine Harvester", "Sprayer"]
+            },
+            "Wheat": {
+                probability: 78,
+                fertilizers: [
+                    { name: "Ammonium Sulfate", description: "Nitrogen source", dosage: "100-120 kg/ha" },
+                    { name: "SSP", description: "Phosphorus for root growth", dosage: "150-200 kg/ha" },
+                    { name: "MOP", description: "Potassium for grain filling", dosage: "40-60 kg/ha" }
+                ],
+                pesticides: [
+                    { name: "Lambda-cyhalothrin", description: "Controls aphids", dosage: "250-300 ml/ha" },
+                    { name: "Deltamethrin", description: "Effective against armyworms", dosage: "250-500 ml/ha" }
+                ],
+                fungicides: [
+                    { name: "Propiconazole", description: "Controls rust diseases", dosage: "500 ml/ha" },
+                    { name: "Tebuconazole", description: "Controls powdery mildew", dosage: "500-750 ml/ha" }
+                ],
+                tools: ["Seed Drill", "Combine Harvester", "Sprayer"]
+            },
+            "Maize": {
+                probability: 82,
+                fertilizers: [
+                    { name: "Urea", description: "Nitrogen for vegetative growth", dosage: "150-200 kg/ha" },
+                    { name: "DAP", description: "Phosphorus for early growth", dosage: "100-150 kg/ha" },
+                    { name: "Potassium Chloride", description: "Potassium for stalk strength", dosage: "60-80 kg/ha" }
+                ],
+                pesticides: [
+                    { name: "Cypermethrin", description: "Controls corn borers", dosage: "300-500 ml/ha" },
+                    { name: "Thiamethoxam", description: "Systemic insecticide", dosage: "100-150 g/ha" }
+                ],
+                fungicides: [
+                    { name: "Mancozeb", description: "Controls leaf blight", dosage: "1.5-2.0 kg/ha" },
+                    { name: "Azoxystrobin", description: "Controls rust", dosage: "500-750 ml/ha" }
+                ],
+                tools: ["Planter", "Corn Harvester", "Cultivator"]
+            },
+            "Beans": {
+                probability: 75,
+                fertilizers: [
+                    { name: "Rhizobium Inoculant", description: "Nitrogen fixation", dosage: "200-250 g/ha" },
+                    { name: "SSP", description: "Phosphorus for pod formation", dosage: "150-200 kg/ha" },
+                    { name: "Gypsum", description: "Calcium and sulfur source", dosage: "200-400 kg/ha" }
+                ],
+                pesticides: [
+                    { name: "Quinalphos", description: "Controls pod borers", dosage: "1.0-1.5 L/ha" },
+                    { name: "Acephate", description: "Controls leaf miners", dosage: "600-800 g/ha" }
+                ],
+                fungicides: [
+                    { name: "Carbendazim", description: "Controls root rot", dosage: "500 g/ha" },
+                    { name: "Metalaxyl", description: "Controls damping off", dosage: "2.5 g/kg seed" }
+                ],
+                tools: ["Planter", "Bean Harvester", "Sprayer"]
+            },
+            "Sorghum": {
+                probability: 70,
+                fertilizers: [
+                    { name: "Urea", description: "Nitrogen for growth", dosage: "80-120 kg/ha" },
+                    { name: "DAP", description: "Phosphorus for development", dosage: "60-100 kg/ha" },
+                    { name: "MOP", description: "Potassium for grain quality", dosage: "40-60 kg/ha" }
+                ],
+                pesticides: [
+                    { name: "Monocrotophos", description: "Controls shoot fly", dosage: "1.0-1.5 L/ha" },
+                    { name: "Spinosad", description: "Controls head bugs", dosage: "80-100 ml/ha" }
+                ],
+                fungicides: [
+                    { name: "Carbendazim", description: "Controls grain mold", dosage: "1.0 g/L water" },
+                    { name: "Copper Oxychloride", description: "Controls leaf spot", dosage: "2.5-3.0 g/L water" }
+                ],
+                tools: ["Planter", "Sorghum Harvester", "Sprayer"]
+            }
+        };
+
+        // Function to predict crops based on input
+        function predictCrops() {
+            // Get form values
+            const location = document.getElementById('location').value;
+            const soilType = document.getElementById('soilType').value;
+            const season = document.getElementById('season').value;
+            const waterAvailability = document.getElementById('waterAvailability').value;
+            const temperature = document.getElementById('temperature').value;
+            const rainfall = document.getElementById('rainfall').value;
+            const phLevel = document.getElementById('phLevel').value;
+
+            // Simple validation
+            if (!location || !soilType || !season || !waterAvailability || 
+                !temperature || !rainfall || !phLevel) {
+                alert("Please fill in all the fields to get crop predictions.");
+                return;
+            }
+
+            // Generate crop recommendations based on conditions (simplified logic)
+            let recommendedCrops = [];
+            
+            if (temperature >= 20 && temperature <= 30 && rainfall >= 100) {
+                recommendedCrops.push("Rice");
+            }
+            
+            if (temperature >= 15 && temperature <= 25 && rainfall >= 50 && rainfall <= 100) {
+                recommendedCrops.push("Wheat");
+            }
+            
+            if (temperature >= 18 && temperature <= 32 && rainfall >= 60) {
+                recommendedCrops.push("Maize");
+            }
+            
+            if (temperature >= 20 && temperature <= 30 && rainfall >= 60 && rainfall <= 120) {
+                recommendedCrops.push("Beans");
+            }
+            
+            if (temperature >= 25 && temperature <= 35 && rainfall >= 50 && rainfall <= 100) {
+                recommendedCrops.push("Sorghum");
+            }
+            
+            // If no crops match the conditions, show default recommendations
+            if (recommendedCrops.length === 0) {
+                recommendedCrops = ["Rice", "Wheat", "Maize", "Beans", "Sorghum"];
+            }
+            
+            // Update recent predictions
+            updateRecentPredictions(recommendedCrops);
+            
+            // Show product recommendations for the first recommended crop
+            showProductRecommendations(recommendedCrops[0]);
+        }
+
+        // Function to update recent predictions
+        function updateRecentPredictions(crops) {
+            const recentContainer = document.getElementById('recentPredictions');
+            recentContainer.innerHTML = '';
+            
+            crops.forEach(crop => {
+                const predictionItem = document.createElement('div');
+                predictionItem.className = 'prediction-item';
+                predictionItem.innerHTML = `
+                    <div>
+                        <div class="prediction-crop">${crop}</div>
+                        <div class="prediction-date">${new Date().toLocaleDateString()}</div>
+                    </div>
+                    <div class="prediction-probability">${cropData[crop].probability}%</div>
+                `;
+                
+                // Add click event to show product recommendations
+                predictionItem.addEventListener('click', () => {
+                    showProductRecommendations(crop);
+                });
+                
+                recentContainer.appendChild(predictionItem);
+            });
+        }
+
+        // Function to show product recommendations for a specific crop
+        function showProductRecommendations(crop) {
+            document.getElementById('productRecommendations').style.display = 'block';
+            document.getElementById('selectedCropName').textContent = `for ${crop}`;
+            
+            const cropInfo = cropData[crop];
+            
+            // Display fertilizers
+            const fertilizerContainer = document.getElementById('fertilizerList');
+            fertilizerContainer.innerHTML = '';
+            cropInfo.fertilizers.forEach(fertilizer => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-name">${fertilizer.name}</div>
+                    <div class="product-description">${fertilizer.description}</div>
+                    <div class="product-dosage">${fertilizer.dosage}</div>
+                `;
+                fertilizerContainer.appendChild(productCard);
+            });
+            
+            // Display pesticides
+            const pesticideContainer = document.getElementById('pesticideList');
+            pesticideContainer.innerHTML = '';
+            cropInfo.pesticides.forEach(pesticide => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-name">${pesticide.name}</div>
+                    <div class="product-description">${pesticide.description}</div>
+                    <div class="product-dosage">${pesticide.dosage}</div>
+                `;
+                pesticideContainer.appendChild(productCard);
+            });
+            
+            // Display fungicides
+            const fungicideContainer = document.getElementById('fungicideList');
+            fungicideContainer.innerHTML = '';
+            cropInfo.fungicides.forEach(fungicide => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-name">${fungicide.name}</div>
+                    <div class="product-description">${fungicide.description}</div>
+                    <div class="product-dosage">${fungicide.dosage}</div>
+                `;
+                fungicideContainer.appendChild(productCard);
+            });
+            
+            // Display tools
+            const toolContainer = document.getElementById('toolList');
+            toolContainer.innerHTML = '';
+            cropInfo.tools.forEach(tool => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <div class="product-name">${tool}</div>
+                    <div class="product-description">Essential equipment for ${crop} cultivation</div>
+                `;
+                toolContainer.appendChild(productCard);
+            });
+            
+            // Scroll to product recommendations
+            document.getElementById('productRecommendations').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+sub_county,observation_date,season,temperature_c,rainfall_mm,humidity_pct,wind_speed_kmh,source
+bondo,2026-03-05,long_rains,27.4,12.3,78,14.2,open_meteo

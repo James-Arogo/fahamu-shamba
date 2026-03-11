@@ -1,0 +1,11 @@
+sub_county,sample_date,soil_type,soil_ph,organic_carbon_pct,nitrogen_pct,phosphorus_mgkg,potassium_mgkg,source
+bondo,2025-04-15,sandy,5.72,1.11,0.109,20.3,203.9,synthetic_demo
+bondo,2025-10-15,sandy,6.12,1.73,0.152,17.2,176.4,synthetic_demo
+ugunja,2025-04-15,loam,6.3,1.43,0.118,9.4,147.0,synthetic_demo
+ugunja,2025-10-15,loam,6.63,1.71,0.088,16.0,124.0,synthetic_demo
+yala,2025-04-15,loam,6.59,1.14,0.113,17.5,113.0,synthetic_demo
+yala,2025-10-15,loam,6.6,1.3,0.121,9.8,151.7,synthetic_demo
+gem,2025-04-15,clay,6.0,1.59,0.154,14.7,192.7,synthetic_demo
+gem,2025-10-15,clay,6.43,1.48,0.079,9.3,169.3,synthetic_demo
+alego,2025-04-15,loam,6.85,1.62,0.142,20.7,181.7,synthetic_demo
+alego,2025-10-15,loam,6.68,2.52,0.092,9.3,126.8,synthetic_demo

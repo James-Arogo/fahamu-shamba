@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-03-06T00:03:36.714604+03:00",
+  "target": "recommended_crop",
+  "selected_model": "random_forest",
+  "feature_columns": [
+    "sub_county",
+    "season",
+    "farm_size_ha",
+    "yield_ton_per_ha",
+    "input_cost_ksh",
+    "revenue_ksh",
+    "profit_ksh",
+    "soil_type",
+    "soil_ph",
+    "organic_carbon_pct",
+    "nitrogen_pct",
+    "phosphorus_mgkg",
+    "potassium_mgkg",
+    "avg_temperature_c",
+    "total_rainfall_mm",
+    "avg_humidity_pct",
+    "avg_wind_speed_kmh",
+    "avg_market_price_ksh_per_kg"
+  ],
+  "numeric_columns": [
+    "farm_size_ha",
+    "yield_ton_per_ha",
+    "input_cost_ksh",
+    "revenue_ksh",
+    "profit_ksh",
+    "soil_ph",
+    "organic_carbon_pct",
+    "nitrogen_pct",
+    "phosphorus_mgkg",
+    "potassium_mgkg",
+    "avg_temperature_c",
+    "total_rainfall_mm",
+    "avg_humidity_pct",
+    "avg_wind_speed_kmh",
+    "avg_market_price_ksh_per_kg"
+  ],
+  "categorical_columns": [
+    "sub_county",
+    "season",
+    "soil_type"
+  ],
+  "labels": [
+    "beans",
+    "groundnuts",
+    "kale",
+    "maize",
+    "millet",
+    "rice",
+    "sorghum",
+    "tomatoes"
+  ],
+  "model_path": "/home/james-arogo/Desktop/fahamu-shamba/ml/models/crop_recommender_model.joblib"
+}

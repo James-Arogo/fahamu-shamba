@@ -1,0 +1,130 @@
+================================================================================
+CHECK CONSTRAINT ERRORS - COMPLETE FIX
+================================================================================
+
+ERRORS FIXED:
+❌ gender IN ('male', 'female', 'other')
+❌ preferred_language IN ('english', 'swahili', 'luo')  
+❌ contact_method IN ('sms', 'call', 'email')
+
+ROOT CAUSE:
+-----------
+1. Form was sending EMPTY VALUES for optional fields
+2. Empty strings violate database CHECK constraints
+3. Dropdown option values were WRONG (capitalized)
+   - Had: 'English', 'Swahili' → Database expected: 'english', 'swahili'
+   - Had: 'Phone Call', 'Email' → Database expected: 'call', 'email'
+
+THE FIX:
+--------
+1. ✅ Only send optional fields if they have values
+2. ✅ Skip empty optional fields entirely
+3. ✅ Fixed ALL dropdown option values to match database constraints
+4. ✅ Added placeholder text: "-- Select (Optional) --"
+
+CHANGES MADE:
+-------------
+File: backend/public/farmer-registration.html
+
+✓ Individual farmer form:
+  - Added optional field filtering
+  - Fixed preferred_language values: 'english', 'swahili', 'luo'
+  - Fixed contact_method values: 'sms', 'call', 'email'
+
+✓ Group farmer form:
+  - Same fixes applied
+
+✓ Dropdown improvements:
+  - Added "Select (Optional)" placeholders
+  - Corrected all option values to match database
+  - Clear labeling of optional fields
+
+FIELDS NOW PROPERLY OPTIONAL:
+-----------------------------
+✓ Gender - Can be skipped
+✓ Date of Birth - Can be skipped
+✓ Email - Can be skipped (but recommended)
+✓ ID Number - Can be skipped
+✓ Ward - Can be skipped
+✓ Water Source - Can be skipped
+✓ Crops Grown - Can be skipped
+✓ Livestock Kept - Can be skipped
+✓ Annual Income - Can be skipped
+✓ Budget - Can be skipped
+✓ Preferred Language - Can be skipped
+✓ Contact Method - Can be skipped
+
+VALID VALUES REFERENCE:
+-----------------------
+Preferred Language:
+  ✓ english
+  ✓ swahili
+  ✓ luo
+
+Contact Method:
+  ✓ sms
+  ✓ call
+  ✓ email
+
+Gender:
+  ✓ male
+  ✓ female
+  ✓ other
+
+HOW TO TEST:
+-------------
+1. Hard refresh browser
+   Windows: Ctrl + Shift + R
+   Mac: Cmd + Shift + R
+
+2. Go to: http://localhost:5000/farmer-registration
+
+3. Fill only REQUIRED fields:
+   ✓ Phone Number (10 digits)
+   ✓ First Name
+   ✓ Last Name
+   ✓ Sub County
+   ✓ Farm Size
+   ✓ Soil Type
+
+4. Leave optional fields BLANK:
+   ✓ Gender (don't select)
+   ✓ Preferred Language (don't select)
+   ✓ Contact Method (don't select)
+
+5. Click Register
+   Expected: ✅ SUCCESS! No constraint errors
+
+TESTING RESULTS:
+----------------
+✅ Registration works WITHOUT selecting:
+   - Gender
+   - Preferred Language
+   - Contact Method
+
+✅ Registration works WITH valid values:
+   - preferredLanguage: "english"
+   - contactMethod: "sms"
+
+✅ All constraint violations fixed
+
+DEPLOYMENT STATUS:
+------------------
+✅ Code changes deployed
+✅ Server running
+✅ API fully functional
+✅ Ready for production
+
+QUICK CHECKLIST:
+----------------
+[ ] Hard refresh browser (Ctrl+Shift+R)
+[ ] Go to /farmer-registration
+[ ] Try with minimal fields only
+[ ] Try with optional fields filled
+[ ] Check registration succeeds
+[ ] Verify no constraint errors appear
+
+STATUS: ✅ COMPLETE AND TESTED
+Date: February 26, 2026
+
+================================================================================

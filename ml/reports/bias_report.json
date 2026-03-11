@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-03-06T00:03:39.301973+03:00",
+  "model_path": "/home/james-arogo/Desktop/fahamu-shamba/ml/models/crop_recommender_model.joblib",
+  "overall": {
+    "accuracy": 0.8666666666666667,
+    "f1_macro": 0.8764945763301026,
+    "top3_accuracy": 1.0,
+    "support": 90
+  },
+  "group_metrics": {
+    "sub_county": {
+      "alego": {
+        "support": 15,
+        "accuracy": 0.7333333333333333,
+        "f1_macro": 0.75,
+        "top3_accuracy": 1.0
+      },
+      "gem": {
+        "support": 25,
+        "accuracy": 0.8,
+        "f1_macro": 0.7647893772893772,
+        "top3_accuracy": 1.0
+      },
+      "ugunja": {
+        "support": 17,
+        "accuracy": 0.8823529411764706,
+        "f1_macro": 0.7666666666666666,
+        "top3_accuracy": 1.0
+      },
+      "bondo": {
+        "support": 18,
+        "accuracy": 0.9444444444444444,
+        "f1_macro": 0.9696969696969697,
+        "top3_accuracy": 1.0
+      },
+      "yala": {
+        "support": 15,
+        "accuracy": 1.0,
+        "f1_macro": 1.0,
+        "top3_accuracy": 1.0
+      }
+    },
+    "soil_type": {
+      "loam": {
+        "support": 47,
+        "accuracy": 0.8723404255319149,
+        "f1_macro": 0.8735760971055089,
+        "top3_accuracy": 1.0
+      },
+      "clay": {
+        "support": 25,
+        "accuracy": 0.8,
+        "f1_macro": 0.7647893772893772,
+        "top3_accuracy": 1.0
+      },
+      "sandy": {
+        "support": 18,
+        "accuracy": 0.9444444444444444,
+        "f1_macro": 0.9696969696969697,
+        "top3_accuracy": 1.0
+      }
+    },
+    "season": {
+      "dry": {
+        "support": 30,
+        "accuracy": 0.8666666666666667,
+        "f1_macro": 0.812689393939394,
+        "top3_accuracy": 1.0
+      },
+      "short_rains": {
+        "support": 43,
+        "accuracy": 0.8837209302325582,
+        "f1_macro": 0.7611566742081448,
+        "top3_accuracy": 1.0
+      },
+      "long_rains": {
+        "support": 17,
+        "accuracy": 0.8235294117647058,
+        "f1_macro": 0.6765873015873016,
+        "top3_accuracy": 1.0
+      }
+    }
+  },
+  "disparity_summary": {
+    "sub_county": {
+      "eligible_groups": 5,
+      "accuracy_gap": 0.2666666666666667,
+      "f1_macro_gap": 0.25,
+      "top3_accuracy_gap": 0.0
+    },
+    "soil_type": {
+      "eligible_groups": 3,
+      "accuracy_gap": 0.14444444444444438,
+      "f1_macro_gap": 0.2049075924075925,
+      "top3_accuracy_gap": 0.0
+    },
+    "season": {
+      "eligible_groups": 3,
+      "accuracy_gap": 0.06019151846785231,
+      "f1_macro_gap": 0.13610209235209236,
+      "top3_accuracy_gap": 0.0
+    }
+  },
+  "min_support": 5
+}

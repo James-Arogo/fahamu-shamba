@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahamu Shamba - API Testing Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e5631 0%, #2d7649 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e5631 0%, #2d7649 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: flex;
+            height: calc(100vh - 150px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin: 20px 0 10px;
+            color: #1e5631;
+            font-size: 1.1em;
+        }
+
+        .endpoint-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .endpoint-btn:hover {
+            background: #1e5631;
+            color: white;
+            border-color: #1e5631;
+        }
+
+        .endpoint-btn.active {
+            background: #2d7649;
+            color: white;
+            border-color: #2d7649;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .request-section, .response-section {
+            flex: 1;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .response-section {
+            border-bottom: none;
+            background: #f8f9fa;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1e5631;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button.send-btn {
+            background: #1e5631;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button.send-btn:hover {
+            background: #2d7649;
+        }
+
+        button.send-btn:active {
+            transform: scale(0.98);
+        }
+
+        .response-display {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .response-display pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: #28a745;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            color: #17a2b8;
+            font-style: italic;
+        }
+
+        .endpoint-label {
+            display: inline-block;
+            background: #1e5631;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .endpoint-label.get { background: #007bff; }
+        .endpoint-label.post { background: #28a745; }
+        .endpoint-label.put { background: #ffc107; color: #333; }
+        .endpoint-label.delete { background: #dc3545; }
+
+        h4 {
+            color: #1e5631;
+            margin: 10px 0;
+        }
+
+        small {
+            color: #666;
+        }
+
+        .method-select {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .method-select select {
+            width: auto;
+            padding: 8px 12px;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo" style="width:58px;height:58px;object-fit:contain;border-radius:50%;background:#fff;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.22);border:2px solid rgba(255,255,255,0.85);vertical-align:middle;"> Fahamu Shamba</h1>
+            <p>API Testing Console - MVP</p>
+        </div>
+
+        <div class="content">
+            <div class="sidebar">
+                <h3>📋 Endpoints</h3>
+
+                <h4 style="color: #2d7649; font-size: 1em; margin-top: 15px;">Recommendations</h4>
+                <button class="endpoint-btn" onclick="loadEndpoint('recommend')">
+                    <span class="endpoint-label post">POST</span> Get Recommendations
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('analyze')">
+                    <span class="endpoint-label post">POST</span> Analyze Farm
+                </button>
+
+                <h4 style="color: #2d7649; font-size: 1em; margin-top: 15px;">Data</h4>
+                <button class="endpoint-btn" onclick="loadEndpoint('market')">
+                    <span class="endpoint-label get">GET</span> Market Prices
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('soil')">
+                    <span class="endpoint-label post">POST</span> Soil Assessment
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('weather')">
+                    <span class="endpoint-label get">GET</span> Weather Data
+                </button>
+
+                <h4 style="color: #2d7649; font-size: 1em; margin-top: 15px;">Farmer</h4>
+                <button class="endpoint-btn" onclick="loadEndpoint('register')">
+                    <span class="endpoint-label post">POST</span> Register Farmer
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('farmers')">
+                    <span class="endpoint-label get">GET</span> Get Farmers
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('predictions')">
+                    <span class="endpoint-label get">GET</span> Get Predictions
+                </button>
+
+                <h4 style="color: #2d7649; font-size: 1em; margin-top: 15px;">System</h4>
+                <button class="endpoint-btn" onclick="loadEndpoint('health')">
+                    <span class="endpoint-label get">GET</span> Health Check
+                </button>
+                <button class="endpoint-btn" onclick="loadEndpoint('stats')">
+                    <span class="endpoint-label get">GET</span> Statistics
+                </button>
+            </div>
+
+            <div class="main">
+                <div class="request-section">
+                    <h3>📤 Request</h3>
+                    <div id="requestUI"></div>
+                </div>
+
+                <div class="response-section">
+                    <h3>📥 Response</h3>
+                    <div id="responseUI"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const endpoints = {
+            recommend: {
+                method: 'POST',
+                path: '/api/recommend',
+                description: 'Get crop recommendations based on farm conditions',
+                body: {
+                    subCounty: 'bondo',
+                    soilType: 'loam',
+                    season: 'long_rains',
+                    budget: 5000,
+                    farmSize: 2,
+                    waterSource: 'Rainfall'
+                }
+            },
+            analyze: {
+                method: 'POST',
+                path: '/api/analyze-farm',
+                description: 'Get comprehensive farm analysis',
+                body: {
+                    subCounty: 'ugunja',
+                    soilType: 'sandy',
+                    season: 'short_rains',
+                    budget: 3500,
+                    farmSize: 1.8,
+                    waterSource: 'Well'
+                }
+            },
+            market: {
+                method: 'GET',
+                path: '/api/market-prices',
+                description: 'Get current market prices for all crops'
+            },
+            soil: {
+                method: 'POST',
+                path: '/api/soil-assessment',
+                description: 'Get soil quality assessment',
+                body: {
+                    subCounty: 'bondo',
+                    soilType: 'clay'
+                }
+            },
+            weather: {
+                method: 'GET',
+                path: '/api/weather-data',
+                description: 'Get weather data for a season and location'
+            },
+            register: {
+                method: 'POST',
+                path: '/api/register-farmer',
+                description: 'Register a new farmer',
+                body: {
+                    phoneNumber: '254712345678',
+                    name: 'John Doe',
+                    subCounty: 'bondo',
+                    soilType: 'loam',
+                    farmSize: 2.5,
+                    waterSource: 'Rainfall',
+                    budget: 5000
+                }
+            },
+            farmers: {
+                method: 'GET',
+                path: '/api/farmers',
+                description: 'Get list of registered farmers'
+            },
+            predictions: {
+                method: 'GET',
+                path: '/api/predictions',
+                description: 'Get prediction history'
+            },
+            health: {
+                method: 'GET',
+                path: '/api/health',
+                description: 'Check API health status'
+            },
+            stats: {
+                method: 'GET',
+                path: '/api/stats',
+                description: 'Get system statistics'
+            }
+        };
+
+        function loadEndpoint(key) {
+            const endpoint = endpoints[key];
+            if (!endpoint) return;
+
+            // Mark active button
+            document.querySelectorAll('.endpoint-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Build request UI
+            let html = `<h4>${endpoint.description}</h4>`;
+            html += `<p><strong>Method:</strong> ${endpoint.method}</p>`;
+            html += `<p><strong>Path:</strong> <code>${endpoint.path}</code></p>`;
+
+            if (endpoint.body) {
+                html += `<div class="form-group">
+                    <label for="requestBody">Request Body (JSON):</label>
+                    <textarea id="requestBody">${JSON.stringify(endpoint.body, null, 2)}</textarea>
+                </div>`;
+            }
+
+            html += `<button class="send-btn" onclick="sendRequest('${key}')">Send Request</button>`;
+
+            document.getElementById('requestUI').innerHTML = html;
+            document.getElementById('responseUI').innerHTML = '<p class="loading">Ready to send request...</p>';
+        }
+
+        async function sendRequest(key) {
+            const endpoint = endpoints[key];
+            const responseUI = document.getElementById('responseUI');
+
+            try {
+                responseUI.innerHTML = '<p class="loading">⏳ Sending request...</p>';
+
+                const options = {
+                    method: endpoint.method
+                };
+
+                if (endpoint.body) {
+                    const bodyText = document.getElementById('requestBody').value;
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = bodyText;
+                }
+
+                const response = await fetch(endpoint.path, options);
+                const data = await response.json();
+
+                let html = response.ok 
+                    ? `<p class="success">✅ Status: ${response.status} ${response.statusText}</p>`
+                    : `<p class="error">❌ Status: ${response.status} ${response.statusText}</p>`;
+
+                html += `<div class="response-display"><pre>${JSON.stringify(data, null, 2)}</pre></div>`;
+
+                responseUI.innerHTML = html;
+            } catch (error) {
+                responseUI.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Load first endpoint on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEndpoint('recommend');
+        });
+    </script>
+</body>
+</html>

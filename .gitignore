@@ -1,0 +1,37 @@
+# Dependencies
+**/node_modules/
+
+# Env files
+.env
+backend/.env
+
+# Logs
+*.log
+backend/logs/
+
+# Coverage
+coverage/
+backend/coverage/
+
+# Databases / backups
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+backend/backups/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS/editor
+.DS_Store
+.vscode/
+
+# Large/binary docs (keep markdown)
+*.pdf
+*.docx
+
+# Local media scratchpad
+photos/

@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fahamu Shamba · Smart Crop Intelligence</title>
+  <style>
+    :root {
+      --primary: #1f7a4d;
+      --primary-dark: #165738;
+      --accent: #f6b736;
+      --bg: #f4f7f2;
+      --panel: #ffffff;
+      --border: #dbe5d8;
+      --text: #1f2a24;
+      --muted: #5f6f65;
+      --shadow: 0 12px 30px rgba(31, 58, 45, 0.12);
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app-shell {
+      padding: clamp(1rem, 2vw, 2.5rem);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      border-radius: 20px;
+      background: radial-gradient(circle at top left, #2e8b57, #1f7a4d);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+    }
+
+    .hero p {
+      margin: 0.2rem 0 0;
+      max-width: 40ch;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button, input, textarea {
+      font: inherit;
+    }
+
+    .ghost-btn,
+    .solid-btn {
+      border-radius: 999px;
+      padding: 0.65rem 1.5rem;
+      border: 1px solid rgba(255,255,255,0.6);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .solid-btn {
+      background: #fff;
+      color: var(--primary);
+      border: none;
+      font-weight: 600;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .ghost-btn:hover,
+    .solid-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .layout {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 20px;
+      padding: clamp(1.2rem, 3vw, 1.8rem);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .panel-header span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .language-toggle {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.2rem;
+      background: #f8fbf5;
+      margin-top: 0.5rem;
+      gap: 0.2rem;
+    }
+
+    .lang-pill {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .lang-pill.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+
+    .progress-step {
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 0.9rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .progress-step.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #f1fbf5;
+      font-weight: 600;
+    }
+
+    .option-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .option-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      gap: 0.5rem;
+    }
+
+    .option-label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 0.2rem 0.75rem;
+      font-size: 0.8rem;
+      background: #f0f5f0;
+      color: var(--muted);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .option-pill {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem;
+      background: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+      text-align: center;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .option-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .option-pill.selected {
+      border-color: var(--primary);
+      background: #ecf8ef;
+      color: var(--primary);
+      box-shadow: inset 0 0 0 1px rgba(31,122,77,0.1);
+    }
+
+    .field {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 0.85rem;
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31,122,77,0.15);
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-bottom: 0.8rem;
+    }
+
+    .primary-btn:disabled {
+      background: #d1dcd4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: #f0f5f0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .status-chip[data-variant="success"] {
+      background: #daf5e2;
+      color: #0e7a44;
+    }
+
+    .status-chip[data-variant="danger"] {
+      background: #fde4df;
+      color: #b93730;
+    }
+
+    .helper-text {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .insight-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .insight-card {
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 16px;
+      padding: 1rem;
+      background: #fdfefc;
+      box-shadow: inset 0 0 0 1px #f1f5ef;
+    }
+
+    .insight-card h3 {
+      margin: 0 0 0.2rem;
+      font-size: 1.1rem;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+
+    .weather-highlight {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .weather-temp {
+      font-size: 2.4rem;
+      font-weight: 700;
+    }
+
+    .metric-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .metric-pills span {
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      background: #eef3ed;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .forecast-list,
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.8rem 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .forecast-item,
+    .history-item {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .history-item span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.8rem;
+      margin-top: 0.8rem;
+    }
+
+    .stat-card {
+      border-radius: 14px;
+      padding: 0.9rem;
+      background: #f4faf3;
+      text-align: center;
+      border: 1px solid #e0f2e4;
+    }
+
+    .stat-card strong {
+      font-size: 1.4rem;
+      display: block;
+    }
+
+    .result-drawer {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: min(420px, calc(100% - 2rem));
+      background: var(--panel);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      border-radius: 24px;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      z-index: 20;
+      max-height: calc(100vh - 3rem);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 1.3rem 1.5rem 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .drawer-header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .close-btn {
+      border: none;
+      background: #f4f6f4;
+      border-radius: 999px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+    }
+
+    .result-body {
+      padding: 0 1.5rem 1.5rem;
+      overflow-y: auto;
+    }
+
+    .primary-recommendation {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      background: #f9fdf8;
+    }
+
+    .primary-recommendation h4 {
+      margin: 0 0 0.4rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .primary-recommendation .crop-name {
+      font-size: 2rem;
+      margin: 0;
+      color: var(--primary);
+    }
+
+    .confidence-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.6rem 0;
+    }
+
+    .reason-box {
+      margin: 0;
+      background: #fff;
+      border-left: 4px solid var(--primary);
+      padding: 0.8rem;
+      border-radius: 12px;
+      color: var(--text);
+    }
+
+    .alt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+    }
+
+    .alt-card {
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 0.9rem;
+    }
+
+    .feedback-block textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.6rem;
+    }
+
+    .feedback-actions button {
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .feedback-actions .positive {
+      background: #1f7a4d;
+    }
+
+    .feedback-actions .negative {
+      background: #c23c2c;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1.5rem;
+      transform: translate(-50%, 120%);
+      background: var(--text);
+      color: #fff;
+      padding: 0.85rem 1.4rem;
+      border-radius: 999px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease;
+      z-index: 25;
+      font-size: 0.95rem;
+    }
+
+    .toast.visible {
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .result-drawer {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        transform: translateY(110%);
+      }
+
+      .result-drawer.open {
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="chip" style="background: rgba(255,255,255,0.15); color:#fff;">Fahamu Shamba · v1.2 beta</p>
+        <h1>🌱 Smarter crop choices for Siaya farmers</h1>
+        <p>Multi-language guidance, real-time weather and market insights packaged in a single farmer-friendly cockpit.</p>
+      </div>
+      <div class="hero-actions">
+        <button class="ghost-btn" id="ussdBtn">📞 Dial *384*86#</button>
+        <button class="solid-btn" id="dashboardBtn">🚀 Farmer dashboard</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel form-panel" aria-labelledby="formTitle">
+        <div class="panel-header">
+          <h2 id="formTitle">Get a tailored recommendation</h2>
+          <span>Answer three quick questions to see the best-fit crop and reasoning.</span>
+          <div class="language-toggle" role="group" aria-label="Language selector">
+            <button class="lang-pill active" data-lang="english">English</button>
+            <button class="lang-pill" data-lang="swahili">Kiswahili</button>
+            <button class="lang-pill" data-lang="luo">Dholuo</button>
+          </div>
+        </div>
+
+        <div class="progress" id="progressList">
+          <div class="progress-step active" data-step="subCounty">📍 Location</div>
+          <div class="progress-step" data-step="soilType">🧪 Soil</div>
+          <div class="progress-step" data-step="season">☀️ Season</div>
+        </div>
+
+        <div class="option-group" data-group="subCounty">
+          <div class="option-label-row">
+            <p class="option-label" id="subCountyLabel">Select Sub-County</p>
+            <span class="chip">Siaya focus</span>
+          </div>
+          <div class="options-grid" id="subCountyOptions"></div>
+        </div>
+
+        <div class="option-group" data-group="soilType">
+          <div class="option-label-row">
+            <p class="option-label" id="soilTypeLabel">Soil Type</p>
+            <span class="chip">Field observation</span>
+          </div>
+          <div class="options-grid" id="soilTypeOptions"></div>
+        </div>
+
+        <div class="option-group" data-group="season">
+          <div class="option-label-row">
+            <p class="option-label" id="seasonLabel">Season</p>
+            <span class="chip">Current/Upcoming</span>
+          </div>
+          <div class="options-grid" id="seasonOptions"></div>
+        </div>
+
+        <div class="field">
+          <label for="phoneInput">Phone number (optional)</label>
+          <input type="tel" id="phoneInput" placeholder="+2547..." autocomplete="tel">
+          <small class="helper-text">Use the same number you dial USSD with for synced history.</small>
+        </div>
+
+        <button class="primary-btn" id="predictBtn" disabled>Request recommendation</button>
+        <p class="helper-text">Prefer USSD? Dial <strong>*384*86#</strong> for the same experience.</p>
+        <span class="status-chip" id="statusChip" data-variant="idle">System idle</span>
+      </section>
+
+      <section class="panel insight-panel">
+        <div class="insight-grid">
+          <article class="insight-card" id="weatherCard">
+            <div>
+              <h3>Live weather</h3>
+              <p class="subtext" id="weatherSubtitle">Pick a sub-county to load data.</p>
+            </div>
+            <div class="weather-highlight">
+              <div>
+                <div class="weather-temp" id="weatherTemp">--°C</div>
+                <p class="subtext" id="weatherDescription">Awaiting location...</p>
+              </div>
+              <div class="chip" id="weatherLocation">--</div>
+            </div>
+            <div class="metric-pills" id="weatherMetrics"></div>
+          </article>
+
+          <article class="insight-card">
+            <div>
+              <h3>3-day outlook</h3>
+              <p class="subtext">Forecast refreshes hourly.</p>
+            </div>
+            <ul class="forecast-list" id="forecastList">
+              <li class="subtext">Weather forecast will appear here after selecting a sub-county.</li>
+            </ul>
+          </article>
+
+          <article class="insight-card">
+            <div>
+              <h3>Market prices (KES / 90kg)</h3>
+              <p class="subtext" id="marketSubtitle">Pulling latest cooperative bulletin...</p>
+            </div>
+            <div id="marketTable"></div>
+          </article>
+
+          <article class="insight-card">
+            <div>
+              <h3>Recent recommendations</h3>
+              <p class="subtext">Linked to your phone for quick recall.</p>
+            </div>
+            <ul class="history-list" id="historyList">
+              <li class="subtext">No history yet. Request a prediction to start a timeline.</li>
+            </ul>
+          </article>
+
+          <article class="insight-card">
+            <div>
+              <h3>System pulse</h3>
+              <p class="subtext">Live usage stats.</p>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <strong id="totalPredictions">--</strong>
+                <span class="subtext">Predictions</span>
+              </div>
+              <div class="stat-card">
+                <strong id="totalFarmers">--</strong>
+                <span class="subtext">Farmers</span>
+              </div>
+              <div class="stat-card">
+                <strong id="topCrop">--</strong>
+                <span class="subtext">Top crop</span>
+              </div>
+              <div class="stat-card">
+                <strong id="topSubCounty">--</strong>
+                <span class="subtext">Hot sub-county</span>
+              </div>
+            </div>
+            <p class="subtext" id="statsFooter" style="margin-top:0.8rem;">Last synced: --</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="result-drawer" id="resultDrawer" aria-live="polite">
+    <div class="drawer-header">
+      <div>
+        <p class="chip">Recommendation</p>
+        <h3 id="resultTitle">We recommend</h3>
+      </div>
+      <button class="close-btn" id="closeResultBtn" aria-label="Close result">✕</button>
+    </div>
+    <div class="result-body">
+      <div class="primary-recommendation">
+        <h4 id="primaryLabel">Primary crop</h4>
+        <p class="crop-name" id="primaryCrop">—</p>
+        <div class="confidence-row">
+          <span id="confidenceBadge">Confidence —%</span>
+          <span id="submittedAt">Now</span>
+        </div>
+        <p class="reason-box" id="primaryReason">Reasoning will show here.</p>
+      </div>
+
+      <div>
+        <h4>Backup options</h4>
+        <div class="alt-list" id="alternativesList">
+          <p class="subtext">We will list other high performing crops here.</p>
+        </div>
+      </div>
+
+      <div class="feedback-block">
+        <label for="feedbackComments">Was this helpful?</label>
+        <textarea id="feedbackComments" placeholder="Share any details (optional)."></textarea>
+        <div class="feedback-actions">
+          <button class="positive" id="feedbackYesBtn">👍 Helpful</button>
+          <button class="negative" id="feedbackNoBtn">👎 Needs work</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const resolveApiBase = () => {
+      if (typeof window === 'undefined') return 'http://localhost:5000';
+      const { protocol, origin } = window.location;
+      if (protocol.startsWith('http')) {
+        return origin.replace(/\/$/, '');
+      }
+      return 'http://localhost:5000';
+    };
+
+    const API_BASE = resolveApiBase();
+
+    const optionValues = {
+      subCounty: ['bondo', 'ugunja', 'yala', 'gem', 'alego'],
+      soilType: ['sandy', 'clay', 'loam'],
+      season: ['long_rains', 'short_rains', 'dry']
+    };
+
+    const translations = {
+      english: {
+        selectSubCounty: "Select Sub-County",
+        soilType: "Soil Type",
+        season: "Season",
+        getPrediction: "Request recommendation",
+        subCounties: ["Bondo", "Ugunja", "Yala", "Gem", "Alego"],
+        soilTypes: ["Sandy soil", "Clay soil", "Loam soil"],
+        seasons: ["Long rains", "Short rains", "Dry season"],
+        resultTitle: "We recommend",
+        phonePlaceholder: "Phone number (optional)",
+        helpful: "Helpful",
+        notHelpful: "Needs work"
+      },
+      swahili: {
+        selectSubCounty: "Chagua sub-kaunti",
+        soilType: "Aina ya udongo",
+        season: "Msimu",
+        getPrediction: "Pata ushauri",
+        subCounties: ["Bondo", "Ugunja", "Yala", "Gem", "Alego"],
+        soilTypes: ["Udongo wa mchanga", "Udongo wa mfinyanzi", "Udongo wa tanuri"],
+        seasons: ["Mvua nyingi", "Mvua fupi", "Msimu wa kiangazi"],
+        resultTitle: "Tunapendekeza",
+        phonePlaceholder: "Nambari ya simu (hiari)",
+        helpful: "Inasaidia",
+        notHelpful: "Bado"
+      },
+      luo: {
+        selectSubCounty: "Yier sub-county",
+        soilType: "Tongo",
+        season: "Piny",
+        getPrediction: "Nong'o kit",
+        subCounties: ["Bondo", "Ugunja", "Yala", "Gem", "Alego"],
+        soilTypes: ["Tongo anyong", "Tongo lal", "Tongo ber"],
+        seasons: ["Piny ruodho", "Piny ruodho machon", "Piny kwo"],
+        resultTitle: "Waneno ni",
+        phonePlaceholder: "Namba mar simu (ma ok adier)",
+        helpful: "Osekonyo",
+        notHelpful: "Ok ose kony"
+      }
+    };
+
+    const state = {
+      language: 'english',
+      selections: {
+        subCounty: null,
+        soilType: null,
+        season: null
+      },
+      phoneNumber: '',
+      isPredicting: false,
+      latestPredictionId: null,
+      latestPredictionTime: null
+    };
+
+    const timers = {
+      stats: null
+    };
+
+    const els = {};
+
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    function initApp() {
+      cacheElements();
+      attachEventHandlers();
+      hydrateFromStorage();
+      updateLanguageUI();
+      renderAllOptions();
+      updatePredictButton();
+      fetchMarketData();
+      fetchStats();
+      fetchHistory();
+    }
+
+    function cacheElements() {
+      els.languageButtons = document.querySelectorAll('.lang-pill');
+      els.optionLabels = {
+        subCounty: document.getElementById('subCountyLabel'),
+        soilType: document.getElementById('soilTypeLabel'),
+        season: document.getElementById('seasonLabel')
+      };
+      els.optionContainers = {
+        subCounty: document.getElementById('subCountyOptions'),
+        soilType: document.getElementById('soilTypeOptions'),
+        season: document.getElementById('seasonOptions')
+      };
+      els.progressSteps = document.querySelectorAll('.progress-step');
+      els.predictBtn = document.getElementById('predictBtn');
+      els.phoneInput = document.getElementById('phoneInput');
+      els.statusChip = document.getElementById('statusChip');
+      els.weather = {
+        card: document.getElementById('weatherCard'),
+        temp: document.getElementById('weatherTemp'),
+        desc: document.getElementById('weatherDescription'),
+        subtitle: document.getElementById('weatherSubtitle'),
+        location: document.getElementById('weatherLocation'),
+        metrics: document.getElementById('weatherMetrics')
+      };
+      els.forecastList = document.getElementById('forecastList');
+      els.marketTable = document.getElementById('marketTable');
+      els.marketSubtitle = document.getElementById('marketSubtitle');
+      els.historyList = document.getElementById('historyList');
+      els.resultDrawer = document.getElementById('resultDrawer');
+      els.resultTitle = document.getElementById('resultTitle');
+      els.primary = {
+        label: document.getElementById('primaryLabel'),
+        crop: document.getElementById('primaryCrop'),
+        confidence: document.getElementById('confidenceBadge'),
+        submitted: document.getElementById('submittedAt'),
+        reason: document.getElementById('primaryReason')
+      };
+      els.alternativesList = document.getElementById('alternativesList');
+      els.feedback = {
+        comments: document.getElementById('feedbackComments'),
+        yesBtn: document.getElementById('feedbackYesBtn'),
+        noBtn: document.getElementById('feedbackNoBtn')
+      };
+      els.stats = {
+        predictions: document.getElementById('totalPredictions'),
+        farmers: document.getElementById('totalFarmers'),
+        topCrop: document.getElementById('topCrop'),
+        topSubCounty: document.getElementById('topSubCounty'),
+        footer: document.getElementById('statsFooter')
+      };
+      els.toast = document.getElementById('toast');
+      els.dashboardBtn = document.getElementById('dashboardBtn');
+      els.ussdBtn = document.getElementById('ussdBtn');
+      els.closeResultBtn = document.getElementById('closeResultBtn');
+    }
+
+    function attachEventHandlers() {
+      els.languageButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          setLanguage(btn.dataset.lang);
+        });
+      });
+
+      Object.keys(els.optionContainers).forEach(type => {
+        els.optionContainers[type].addEventListener('click', (event) => {
+          const target = event.target.closest('.option-pill');
+          if (!target) return;
+          handleSelection(type, target.dataset.value);
+        });
+      });
+
+      els.predictBtn.addEventListener('click', requestPrediction);
+      els.phoneInput.addEventListener('input', debounce(handlePhoneInput, 400));
+      els.feedback.yesBtn.addEventListener('click', () => submitFeedback(true));
+      els.feedback.noBtn.addEventListener('click', () => submitFeedback(false));
+      els.closeResultBtn.addEventListener('click', () => toggleResultDrawer(false));
+      els.dashboardBtn.addEventListener('click', () => window.location.href = '/dashboard');
+      els.ussdBtn.addEventListener('click', () => showToast('Dial *384*86# on your phone to access the USSD menu.'));
+    }
+
+    function hydrateFromStorage() {
+      const storedLanguage = localStorage.getItem('fs_language');
+      const storedPhone = localStorage.getItem('fs_phone');
+      if (storedLanguage) {
+        state.language = storedLanguage;
+        setLanguage(storedLanguage, { persist: false });
+      }
+      if (storedPhone) {
+        state.phoneNumber = storedPhone;
+        els.phoneInput.value = storedPhone;
+      }
+    }
+
+    function setLanguage(lang, options = { persist: true }) {
+      state.language = lang;
+      if (options.persist) {
+        localStorage.setItem('fs_language', lang);
+      }
+      updateLanguageUI();
+      renderAllOptions();
+    }
+
+    function updateLanguageUI() {
+      els.languageButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === state.language);
+      });
+      const t = translations[state.language];
+      els.optionLabels.subCounty.textContent = t.selectSubCounty;
+      els.optionLabels.soilType.textContent = t.soilType;
+      els.optionLabels.season.textContent = t.season;
+      els.predictBtn.textContent = t.getPrediction;
+      els.resultTitle.textContent = t.resultTitle;
+      els.feedback.yesBtn.textContent = `👍 ${t.helpful}`;
+      els.feedback.noBtn.textContent = `👎 ${t.notHelpful}`;
+      els.primary.label.textContent = t.resultTitle;
+      els.phoneInput.placeholder = t.phonePlaceholder;
+    }
+
+    function renderAllOptions() {
+      ['subCounty', 'soilType', 'season'].forEach(type => renderOptions(type));
+    }
+
+    function renderOptions(type) {
+      const labelsKey = {
+        subCounty: 'subCounties',
+        soilType: 'soilTypes',
+        season: 'seasons'
+      }[type];
+
+      const labels = translations[state.language][labelsKey];
+      const container = els.optionContainers[type];
+      container.innerHTML = '';
+
+      optionValues[type].forEach((value, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'option-pill';
+        button.textContent = labels[index];
+        button.dataset.value = value;
+        if (state.selections[type] === value) {
+          button.classList.add('selected');
+        }
+        container.appendChild(button);
+      });
+
+      updateProgress();
+    }
+
+    function handleSelection(type, value) {
+      state.selections[type] = value;
+      renderOptions(type);
+      updatePredictButton();
+
+      if (type === 'subCounty') {
+        fetchWeather(value);
+      }
+    }
+
+    function updateProgress() {
+      els.progressSteps.forEach(step => {
+        const stepKey = step.dataset.step;
+        step.classList.toggle('active', Boolean(state.selections[stepKey]));
+      });
+    }
+
+    function updatePredictButton() {
+      const isReady = Object.values(state.selections).every(Boolean);
+      els.predictBtn.disabled = !isReady || state.isPredicting;
+      els.predictBtn.textContent = state.isPredicting ? 'Working...' : translations[state.language].getPrediction;
+    }
+
+    async function requestPrediction() {
+      if (els.predictBtn.disabled) return;
+
+      state.isPredicting = true;
+      updatePredictButton();
+      setStatus('Requesting recommendation...', 'idle');
+
+      try {
+        const response = await fetch(`${API_BASE}/api/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subCounty: state.selections.subCounty,
+            soilType: state.selections.soilType,
+            season: state.selections.season,
+            language: state.language,
+            phoneNumber: state.phoneNumber || undefined
+          })
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.message || 'Prediction failed');
+        }
+
+        state.latestPredictionId = payload.predictionId;
+        state.latestPredictionTime = payload.submitted_at;
+        setStatus('Recommendation ready', 'success');
+        hydrateResultDrawer(payload);
+        fetchHistory(state.phoneNumber);
+        toggleResultDrawer(true);
+
+        if (payload.notificationStatus?.queued) {
+          const target = state.phoneNumber || 'your phone';
+          const provider = payload.notificationStatus.channel === 'twilio_sms' ? 'Twilio' : 
+                          payload.notificationStatus.channel === 'safaricom_sms' ? 'Safaricom' : 'SMS';
+          showToast(`📱 ${provider} SMS sent to ${target}.`);
+        } else if (payload.notificationStatus?.reason && payload.notificationStatus.channel !== 'none') {
+          console.info('SMS notification not sent:', payload.notificationStatus.reason);
+          // Only show error if phone number was provided
+          if (state.phoneNumber) {
+            showToast(`⚠️ SMS not sent: ${payload.notificationStatus.reason}`);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus(error.message, 'danger');
+        showToast(error.message || 'We could not complete the request.');
+      } finally {
+        state.isPredicting = false;
+        updatePredictButton();
+      }
+    }
+
+    function hydrateResultDrawer(data) {
+      els.primary.crop.textContent = (data.crop || '').toUpperCase();
+      els.primary.confidence.textContent = `Confidence ${data.confidence || '--'}%`;
+      els.primary.reason.textContent = data.reason || 'No explanation provided.';
+      els.primary.submitted.textContent = data.submitted_at ? new Date(data.submitted_at).toLocaleString() : 'Just now';
+      els.alternativesList.innerHTML = '';
+
+      if (data.alternatives && data.alternatives.length) {
+        data.alternatives.forEach(alt => {
+          const card = document.createElement('div');
+          card.className = 'alt-card';
+          card.innerHTML = `
+            <strong>${alt.crop.toUpperCase()} • ${alt.confidence}%</strong>
+            <p class="subtext">Soil: ${alt.soil}, Season: ${alt.season.replace('_', ' ')}</p>
+            <p>${alt.reason}</p>
+          `;
+          els.alternativesList.appendChild(card);
+        });
+      } else {
+        els.alternativesList.innerHTML = '<p class="subtext">No additional crops matched your criteria.</p>';
+      }
+    }
+
+    function toggleResultDrawer(open) {
+      els.resultDrawer.classList.toggle('open', open);
+    }
+
+    async function fetchWeather(subCounty) {
+      els.weather.subtitle.textContent = 'Loading live weather...';
+      els.weather.location.textContent = subCounty.toUpperCase();
+      try {
+        const response = await fetch(`${API_BASE}/api/weather/summary/${subCounty}`);
+        const payload = await response.json();
+        if (!payload.success) throw new Error('Weather data unavailable');
+        renderWeather(payload.data);
+      } catch (error) {
+        console.error(error);
+        els.weather.subtitle.textContent = 'Unable to load weather right now.';
+      }
+    }
+
+    function renderWeather(data) {
+      const current = data.current;
+      els.weather.temp.textContent = `${current.temperature ?? '--'}°C`;
+      els.weather.desc.textContent = current.description || '—';
+      els.weather.subtitle.textContent = 'Updated a few seconds ago';
+      els.weather.metrics.innerHTML = '';
+
+      const metrics = [
+        { label: 'Humidity', value: `${current.humidity}%` },
+        { label: 'Wind', value: `${current.wind_speed || 0} m/s` },
+        { label: 'Precip', value: `${current.precipitation || 0} mm` }
+      ];
+
+      metrics.forEach(metric => {
+        const pill = document.createElement('span');
+        pill.textContent = `${metric.label}: ${metric.value}`;
+        els.weather.metrics.appendChild(pill);
+      });
+
+      if (data.forecast) {
+        els.forecastList.innerHTML = '';
+        data.forecast.slice(0, 3).forEach(day => {
+          const item = document.createElement('li');
+          item.className = 'forecast-item';
+          const date = new Date(day.date);
+          item.innerHTML = `
+            <div>
+              <strong>${date.toLocaleDateString(undefined, { weekday: 'short' })}</strong>
+              <p class="subtext">${day.description}</p>
+            </div>
+            <div>${day.temperature.min}° / ${day.temperature.max}°</div>
+          `;
+          els.forecastList.appendChild(item);
+        });
+      }
+    }
+
+    async function fetchMarketData() {
+      try {
+        const response = await fetch(`${API_BASE}/api/market`);
+        const payload = await response.json();
+        if (!payload.success) throw new Error('Market unavailable');
+        renderMarket(payload.marketData, payload.updatedAt);
+      } catch (error) {
+        console.error(error);
+        els.marketSubtitle.textContent = 'Market data unavailable.';
+      }
+    }
+
+    function renderMarket(data, updatedAt) {
+      els.marketSubtitle.textContent = updatedAt ? `Updated ${new Date(updatedAt).toLocaleString()}` : 'Latest prices';
+      const table = document.createElement('table');
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      table.innerHTML = `
+        <thead style="font-size:0.85rem;color:${'var(--muted)'};">
+          <tr>
+            <th align="left">Crop</th>
+            <th align="right">Bondo</th>
+            <th align="right">Ugunja</th>
+            <th align="right">Yala</th>
+          </tr>
+        </thead>
+      `;
+      const tbody = document.createElement('tbody');
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.crop}</td>
+          <td align="right">${row.bondo}</td>
+          <td align="right">${row.ugunja}</td>
+          <td align="right">${row.yala}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      els.marketTable.innerHTML = '';
+      els.marketTable.appendChild(table);
+    }
+
+    async function fetchHistory(phoneNumber = '') {
+      const params = new URLSearchParams({ limit: 5 });
+      if (phoneNumber) params.append('phoneNumber', phoneNumber);
+      try {
+        const response = await fetch(`${API_BASE}/api/predictions?${params.toString()}`);
+        const payload = await response.json();
+        if (!payload.success) throw new Error('Failed to get history');
+        renderHistory(payload.predictions || []);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function renderHistory(entries) {
+      els.historyList.innerHTML = '';
+      if (!entries.length) {
+        const li = document.createElement('li');
+        li.className = 'subtext';
+        li.textContent = 'No recommendations logged yet.';
+        els.historyList.appendChild(li);
+        return;
+      }
+
+      entries.forEach(entry => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        const created = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : '--';
+        li.innerHTML = `
+          <div>
+            <strong>${(entry.predicted_crop || '').toUpperCase()}</strong>
+            <span>${entry.sub_county} • ${entry.season}</span>
+          </div>
+          <span>${created}</span>
+        `;
+        els.historyList.appendChild(li);
+      });
+    }
+
+    async function fetchStats() {
+      clearTimeout(timers.stats);
+      try {
+        const response = await fetch(`${API_BASE}/api/stats`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (!payload.success) throw new Error(payload.message || 'Stats unavailable');
+        renderStats(payload.data);
+        scheduleStatsRefresh(60000);
+      } catch (error) {
+        console.error(error);
+        els.stats.footer.textContent = 'System pulse unavailable. Retrying shortly...';
+        scheduleStatsRefresh(15000);
+      }
+    }
+
+    function renderStats(data = {}) {
+      els.stats.predictions.textContent = data.totalPredictions ?? '--';
+      els.stats.farmers.textContent = data.totalFarmers ?? '--';
+      els.stats.topCrop.textContent = data.topCrop ? data.topCrop.toUpperCase() : '--';
+      els.stats.topSubCounty.textContent = data.topSubCounty ? data.topSubCounty.toUpperCase() : '--';
+      els.stats.footer.textContent = data.lastPredictionAt ? `Last prediction on ${new Date(data.lastPredictionAt).toLocaleString()}` : 'No predictions yet.';
+    }
+
+    function scheduleStatsRefresh(delay = 60000) {
+      clearTimeout(timers.stats);
+      timers.stats = setTimeout(fetchStats, delay);
+    }
+
+    function handlePhoneInput(event) {
+      const value = event.target.value.trim();
+      state.phoneNumber = value;
+      if (value) {
+        localStorage.setItem('fs_phone', value);
+      } else {
+        localStorage.removeItem('fs_phone');
+      }
+      fetchHistory(value);
+    }
+
+    async function submitFeedback(isHelpful) {
+      if (!state.latestPredictionId) {
+        showToast('Request a prediction first.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            predictionId: state.latestPredictionId,
+            phoneNumber: state.phoneNumber || undefined,
+            helpful: isHelpful,
+            comments: els.feedback.comments.value
+          })
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.message || 'Feedback failed');
+        }
+
+        showToast('Thanks for the feedback!');
+        els.feedback.comments.value = '';
+        toggleResultDrawer(false);
+      } catch (error) {
+        console.error(error);
+        showToast('Could not send feedback.');
+      }
+    }
+
+    function setStatus(message, variant = 'idle') {
+      els.statusChip.textContent = message;
+      els.statusChip.dataset.variant = variant;
+    }
+
+    function showToast(message, timeout = 3000) {
+      els.toast.textContent = message;
+      els.toast.classList.add('visible');
+      setTimeout(() => els.toast.classList.remove('visible'), timeout);
+    }
+
+    function debounce(fn, delay = 300) {
+      let timer;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+  </script>
+</body>
+</html>

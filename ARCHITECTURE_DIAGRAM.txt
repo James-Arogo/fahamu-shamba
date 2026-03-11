@@ -1,0 +1,127 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║           FARMER PROFILE DASHBOARD INTEGRATION - ARCHITECTURE               ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           USER INTERFACES                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+   ┌──────────────────────┐      ┌──────────────────────┐      ┌────────────────┐
+   │   Farmer Profile     │      │   Main Dashboard     │      │ Admin Dashboard │
+   │   Management         │      │   (Analytics)        │      │                 │
+   │                      │      │                      │      │                 │
+   │ • Register farmers   │      │ • Overview           │      │ • Login         │
+   │ • View profiles      │      │ • Predictions        │      │ • Statistics    │
+   │ • Manage farms       │      │ • Farmers list ✅     │      │ • Farmer count  │
+   │ • Track activity     │      │ • Market prices      │      │ • Activity logs │
+   │                      │      │ • Analysis           │      │                 │
+   └──────────┬───────────┘      └──────────┬───────────┘      └────────┬────────┘
+              │                             │                           │
+              │ POST /register              │ GET /list                 │ GET /admin
+              │                             │                           │
+              └─────────────┬───────────────┴───────────────────────────┘
+                            │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          API LAYER (Node/Express)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌────────────────────────────┐  ┌──────────────────────────────────────┐  │
+│  │  Farmer Profile Routes     │  │   Admin Routes (Enhanced)             │  │
+│  │  (/api/farmer-profile/...)  │  │   (/api/admin/...)                    │  │
+│  │                            │  │                                      │  │
+│  │ • POST /register ✅         │  │ • GET /dashboard ✅ (updated)         │  │
+│  │ • GET / list ✅            │  │ • GET /farmer-profiles ✅ (new)       │  │
+│  │ • GET /:id                 │  │ • GET /farmer-profiles/:id ✅ (new)   │  │
+│  │ • GET /phone/:phone ✅      │  │ • GET /stats/summary ✅ (new)         │  │
+│  │ • PUT /:id                 │  │                                      │  │
+│  │ • POST /:id/verify ✅       │  │ Authentication: JWT Token             │  │
+│  │ • GET /statistics ✅        │  │                                      │  │
+│  │                            │  │                                      │  │
+│  │ No authentication required │  │                                      │  │
+│  └────────────┬───────────────┘  └──────────────┬───────────────────────┘  │
+│               │                                  │                         │
+│               └──────────────────┬───────────────┘                         │
+│                                  │                                        │
+└──────────────────────────────────┼────────────────────────────────────────┘
+                                   │
+┌──────────────────────────────────┼────────────────────────────────────────┐
+│                             DATABASE LAYER                               │
+├──────────────────────────────────┼────────────────────────────────────────┤
+│                                  │                                       │
+│   ┌─────────────────────────┐   │    ┌──────────────────────────────┐  │
+│   │  farmer_profiles ✅      │   │    │   farmer_activity_logs ✅     │  │
+│   │  (Enhanced schema)       │   │    │   (Audit trail)              │  │
+│   │                          │   │    │                              │  │
+│   │ • farmer_id (PK)         │   │    │ • farmer_id (FK)             │  │
+│   │ • phone_number (UQ)      │   │    │ • activity_type              │  │
+│   │ • first_name             │   │    │ • description                │  │
+│   │ • last_name              │◄──┼────│ • metadata                   │  │
+│   │ • email                  │   │    │ • created_at                 │  │
+│   │ • date_of_birth          │   │    │                              │  │
+│   │ • gender                 │   │    └──────────────────────────────┘  │
+│   │ • id_number              │   │                                       │
+│   │ • sub_county             │   │    ┌──────────────────────────────┐  │
+│   │ • soil_type              │   │    │   farmer_farms ✅             │  │
+│   │ • farm_size              │   │    │   (Multi-farm support)       │  │
+│   │ • water_source           │   │    │                              │  │
+│   │ • crops_grown            │   │    │ • farmer_id (FK)             │  │
+│   │ • livestock_kept         │   │    │ • farm_name                  │  │
+│   │ • annual_income          │   │    │ • farm_location              │  │
+│   │ • budget                 │   │    │ • farm_size                  │  │
+│   │ • preferred_language     │   │    │ • soil_type                  │  │
+│   │ • contact_method         │   │    │ • water_source               │  │
+│   │ • profile_verified       │   │    │ • is_primary                 │  │
+│   │ • profile_completion_%   │   │    │                              │  │
+│   │ • is_active              │   │    └──────────────────────────────┘  │
+│   │ • created_at             │   │                                       │
+│   │ • updated_at             │   │    ┌──────────────────────────────┐  │
+│   │                          │   │    │   farmers (Legacy)            │  │
+│   │ Indexes:                 │   │    │   (Still supported)          │  │
+│   │ • idx_phone              │   │    │                              │  │
+│   │ • idx_email              │   │    │ • id                         │  │
+│   │ • idx_subcounty          │   │    │ • phone_number               │  │
+│   │ • idx_active             │   │    │ • sub_county                 │  │
+│   │ • idx_farmer_id          │   │    │ • soil_type                  │  │
+│   │                          │   │    │ • preferred_language         │  │
+│   └──────────────────────────┘   │    │ • created_at                 │  │
+│                                  │    │                              │  │
+│                                  │    └──────────────────────────────┘  │
+│                                  │                                       │
+│                          SQLite: fahamu_shamba.db                        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          DATA FLOW EXAMPLE                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+REGISTRATION FLOW:
+  1. Farmer fills form in Farmer Profile Dashboard
+  2. POST /api/farmer-profile/register
+  3. Data saved to farmer_profiles table
+  4. Activity logged to farmer_activity_logs
+  5. Response includes farmer_id
+
+RETRIEVAL FLOW:
+  1. Dashboard calls GET /api/farmer-profile
+  2. Backend queries farmer_profiles table
+  3. Returns list with pagination
+  4. Frontend displays in table
+
+STATISTICS FLOW:
+  1. Admin views /admin/dashboard
+  2. GET /api/admin/dashboard
+  3. Counts from both farmers and farmer_profiles
+  4. Returns combined statistics
+  5. Shows in admin dashboard UI
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         KEY INTEGRATIONS ✅                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+✅ Main Dashboard ← Fetches from /api/farmer-profile
+✅ Admin Dashboard ← Gets combined count from /api/admin/dashboard
+✅ Farmer Profile Dashboard ← Saves to farmer_profiles table
+✅ All systems ← Share same database instance
+✅ Activity Tracking ← Logs all changes to farmer_activity_logs
+✅ Admin Control ← Can verify and manage profiles via admin routes

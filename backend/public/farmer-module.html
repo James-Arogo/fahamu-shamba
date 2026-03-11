@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Registration & Profile - Fahamu Shamba</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .farmer-list {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .farmer-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .farmer-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .farmer-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .farmer-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+
+        .farmer-info-item {
+            color: #666;
+        }
+
+        .farmer-info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            flex: 1;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-view {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+        }
+
+        .search-box button {
+            padding: 12px 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-close {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .modal-close button {
+            background: #f0f0f0;
+            color: #333;
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo" style="width:58px;height:58px;object-fit:contain;border-radius:50%;background:#fff;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.22);border:2px solid rgba(255,255,255,0.85);vertical-align:middle;"> Farmer Dashboard</h1>
+            <p>Register, update, and manage your farm profile</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('register')">Register as Farmer</button>
+            <button class="tab-btn" onclick="switchTab('profile')">My Profile</button>
+            <button class="tab-btn" onclick="switchTab('directory')">Farmer Directory</button>
+            <button class="tab-btn" onclick="switchTab('statistics')">Statistics</button>
+        </div>
+
+        <!-- Registration Tab -->
+        <div id="register" class="tab-content active">
+            <div class="form-container">
+                <h2>Register as a Farmer</h2>
+                <p style="color: #666; margin-bottom: 20px;">Join our farming community and get personalized crop recommendations</p>
+                
+                <div id="registerAlert"></div>
+
+                <form id="registrationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regPhone">Phone Number *</label>
+                            <input type="tel" id="regPhone" name="phoneNumber" required placeholder="254712345678">
+                        </div>
+                        <div class="form-group">
+                            <label for="regEmail">Email</label>
+                            <input type="email" id="regEmail" name="email" placeholder="farmer@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regFirstName">First Name</label>
+                            <input type="text" id="regFirstName" name="firstName" placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="regLastName">Last Name</label>
+                            <input type="text" id="regLastName" name="lastName" placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regSubCounty">Sub-County *</label>
+                            <select id="regSubCounty" name="subCounty" required>
+                                <option value="">Select Sub-County</option>
+                                <option value="bondo">Bondo</option>
+                                <option value="ugunja">Ugunja</option>
+                                <option value="yala">Yala</option>
+                                <option value="gem">Gem</option>
+                                <option value="alego">Alego</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="regSoilType">Soil Type *</label>
+                            <select id="regSoilType" name="soilType" required>
+                                <option value="">Select Soil Type</option>
+                                <option value="sandy">Sandy</option>
+                                <option value="clay">Clay</option>
+                                <option value="loam">Loam</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regFarmSize">Farm Size (hectares)</label>
+                            <input type="number" id="regFarmSize" name="farmSize" step="0.1" placeholder="2.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="regWaterSource">Water Source *</label>
+                            <select id="regWaterSource" name="waterSource" required>
+                                <option value="">Select Water Source</option>
+                                <option value="rainfall">Rainfall</option>
+                                <option value="well">Well</option>
+                                <option value="borehole">Borehole</option>
+                                <option value="river">River</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regBudget">Budget (KSh)</label>
+                            <input type="number" id="regBudget" name="budget" step="0.01" placeholder="5000">
+                        </div>
+                        <div class="form-group">
+                            <label for="regLanguage">Preferred Language</label>
+                            <select id="regLanguage" name="preferredLanguage">
+                                <option value="english">English</option>
+                                <option value="swahili">Swahili</option>
+                                <option value="luo">Luo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Register</button>
+                        <button type="reset" class="btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content">
+            <div class="form-container">
+                <h2>My Farmer Profile</h2>
+                
+                <div id="profileAlert"></div>
+
+                <div id="profileSearch" class="search-box">
+                    <input type="text" id="profilePhone" placeholder="Enter your phone number to load profile">
+                    <button class="btn-primary" onclick="loadProfile()">Load Profile</button>
+                </div>
+
+                <form id="profileForm" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profFirstName">First Name</label>
+                            <input type="text" id="profFirstName" name="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="profLastName">Last Name</label>
+                            <input type="text" id="profLastName" name="lastName">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profPhone">Phone Number</label>
+                            <input type="tel" id="profPhone" name="phoneNumber" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="profEmail">Email</label>
+                            <input type="email" id="profEmail" name="email">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profSubCounty">Sub-County</label>
+                            <select id="profSubCounty" name="subCounty">
+                                <option value="">Select Sub-County</option>
+                                <option value="bondo">Bondo</option>
+                                <option value="ugunja">Ugunja</option>
+                                <option value="yala">Yala</option>
+                                <option value="gem">Gem</option>
+                                <option value="alego">Alego</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profSoilType">Soil Type</label>
+                            <select id="profSoilType" name="soilType">
+                                <option value="">Select Soil Type</option>
+                                <option value="sandy">Sandy</option>
+                                <option value="clay">Clay</option>
+                                <option value="loam">Loam</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profFarmSize">Farm Size (hectares)</label>
+                            <input type="number" id="profFarmSize" name="farmSize" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="profWaterSource">Water Source</label>
+                            <select id="profWaterSource" name="waterSource">
+                                <option value="">Select Water Source</option>
+                                <option value="rainfall">Rainfall</option>
+                                <option value="well">Well</option>
+                                <option value="borehole">Borehole</option>
+                                <option value="river">River</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profBudget">Budget (KSh)</label>
+                            <input type="number" id="profBudget" name="budget" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="profLanguage">Preferred Language</label>
+                            <select id="profLanguage" name="preferredLanguage">
+                                <option value="english">English</option>
+                                <option value="swahili">Swahili</option>
+                                <option value="luo">Luo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Update Profile</button>
+                        <button type="button" class="btn-secondary" onclick="resetProfileForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Directory Tab -->
+        <div id="directory" class="tab-content">
+            <div class="farmer-list">
+                <h2>Farmer Directory</h2>
+                
+                <div id="directoryAlert"></div>
+
+                <div class="search-box">
+                    <input type="text" id="searchTerm" placeholder="Search by name, phone, or email...">
+                    <button class="btn-primary" onclick="searchFarmers()">Search</button>
+                    <button class="btn-secondary" onclick="loadAllFarmers()">Show All</button>
+                </div>
+
+                <div id="farmerListContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading farmers...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div id="statsContainer">
+                <h2>Farmer Statistics</h2>
+                <div id="statisticsAlert"></div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Farmers</div>
+                        <div class="stat-number" id="statTotalFarmers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Average Farm Size</div>
+                        <div class="stat-number" id="statAvgFarmSize">0</div>
+                        <div class="stat-label" style="font-size: 0.8em; color: #999;">hectares</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Average Budget</div>
+                        <div class="stat-number" id="statAvgBudget">0</div>
+                        <div class="stat-label" style="font-size: 0.8em; color: #999;">KSh</div>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px;">Farmers by Sub-County</h3>
+                    <div id="farmersBySubCounty"></div>
+                </div>
+
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                    <h3 style="margin-bottom: 20px;">Farmers by Soil Type</h3>
+                    <div id="farmersBySoilType"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-close">
+                <button onclick="closeEditModal()">✕ Close</button>
+            </div>
+            <h2>Edit Farmer Profile</h2>
+            <form id="editForm" style="margin-top: 20px;">
+                <div class="form-group">
+                    <label for="editFirstName">First Name</label>
+                    <input type="text" id="editFirstName" name="firstName">
+                </div>
+
+                <div class="form-group">
+                    <label for="editLastName">Last Name</label>
+                    <input type="text" id="editLastName" name="lastName">
+                </div>
+
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubCounty">Sub-County</label>
+                    <select id="editSubCounty" name="subCounty">
+                        <option value="">Select Sub-County</option>
+                        <option value="bondo">Bondo</option>
+                        <option value="ugunja">Ugunja</option>
+                        <option value="yala">Yala</option>
+                        <option value="gem">Gem</option>
+                        <option value="alego">Alego</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editSoilType">Soil Type</label>
+                    <select id="editSoilType" name="soilType">
+                        <option value="">Select Soil Type</option>
+                        <option value="sandy">Sandy</option>
+                        <option value="clay">Clay</option>
+                        <option value="loam">Loam</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editFarmSize">Farm Size (hectares)</label>
+                    <input type="number" id="editFarmSize" name="farmSize" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="editWaterSource">Water Source</label>
+                    <select id="editWaterSource" name="waterSource">
+                        <option value="">Select Water Source</option>
+                        <option value="rainfall">Rainfall</option>
+                        <option value="well">Well</option>
+                        <option value="borehole">Borehole</option>
+                        <option value="river">River</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editBudget">Budget (KSh)</label>
+                    <input type="number" id="editBudget" name="budget" step="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label for="editLanguage">Preferred Language</label>
+                    <select id="editLanguage" name="preferredLanguage">
+                        <option value="english">English</option>
+                        <option value="swahili">Swahili</option>
+                        <option value="luo">Luo</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentFarmerId = null;
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'directory') {
+                loadAllFarmers();
+            } else if (tabName === 'statistics') {
+                loadStatistics();
+            }
+        }
+
+        // Show alert
+        function showAlert(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                    <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; cursor: pointer; font-size: 1.2em;">×</button>
+                </div>
+            `;
+            setTimeout(() => {
+                if (container.querySelector('.alert')) {
+                    container.querySelector('.alert').remove();
+                }
+            }, 5000);
+        }
+
+        // Registration form
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                phoneNumber: document.getElementById('regPhone').value,
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                email: document.getElementById('regEmail').value,
+                subCounty: document.getElementById('regSubCounty').value,
+                soilType: document.getElementById('regSoilType').value,
+                farmSize: parseFloat(document.getElementById('regFarmSize').value) || 0,
+                waterSource: document.getElementById('regWaterSource').value,
+                budget: parseFloat(document.getElementById('regBudget').value) || 0,
+                preferredLanguage: document.getElementById('regLanguage').value
+            };
+
+            try {
+                const response = await fetch('/api/farmers/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('registerAlert', '✅ ' + data.message, 'success');
+                    document.getElementById('registrationForm').reset();
+                    setTimeout(() => {
+                        switchTab('profile');
+                    }, 1500);
+                } else {
+                    showAlert('registerAlert', '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showAlert('registerAlert', '❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        // Load profile
+        async function loadProfile() {
+            const phone = document.getElementById('profilePhone').value;
+            if (!phone) {
+                showAlert('profileAlert', 'Please enter your phone number', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/farmers/phone/${encodeURIComponent(phone)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentFarmerId = data.data.id;
+                    document.getElementById('profFirstName').value = data.data.first_name || '';
+                    document.getElementById('profLastName').value = data.data.last_name || '';
+                    document.getElementById('profPhone').value = data.data.phone_number || '';
+                    document.getElementById('profEmail').value = data.data.email || '';
+                    document.getElementById('profSubCounty').value = data.data.sub_county || '';
+                    document.getElementById('profSoilType').value = data.data.soil_type || '';
+                    document.getElementById('profFarmSize').value = data.data.farm_size || '';
+                    document.getElementById('profWaterSource').value = data.data.water_source || '';
+                    document.getElementById('profBudget').value = data.data.budget || '';
+                    document.getElementById('profLanguage').value = data.data.preferred_language || 'english';
+                    document.getElementById('profileForm').style.display = 'block';
+                } else {
+                    showAlert('profileAlert', 'Farmer not found', 'error');
+                }
+            } catch (error) {
+                showAlert('profileAlert', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        // Profile form submit
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                firstName: document.getElementById('profFirstName').value,
+                lastName: document.getElementById('profLastName').value,
+                email: document.getElementById('profEmail').value,
+                subCounty: document.getElementById('profSubCounty').value,
+                soilType: document.getElementById('profSoilType').value,
+                farmSize: parseFloat(document.getElementById('profFarmSize').value) || 0,
+                waterSource: document.getElementById('profWaterSource').value,
+                budget: parseFloat(document.getElementById('profBudget').value) || 0,
+                preferredLanguage: document.getElementById('profLanguage').value
+            };
+
+            try {
+                const response = await fetch(`/api/farmers/${currentFarmerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('profileAlert', '✅ ' + data.message, 'success');
+                } else {
+                    showAlert('profileAlert', '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showAlert('profileAlert', '❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        // Reset profile form
+        function resetProfileForm() {
+            document.getElementById('profileForm').style.display = 'none';
+            document.getElementById('profilePhone').value = '';
+            currentFarmerId = null;
+        }
+
+        // Load all farmers
+        async function loadAllFarmers() {
+            const container = document.getElementById('farmerListContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading farmers...</p></div>';
+
+            try {
+                const response = await fetch('/api/farmers?limit=100');
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(farmer => `
+                        <div class="farmer-card">
+                            <div class="farmer-name">${farmer.first_name || ''} ${farmer.last_name || ''}</div>
+                            <div class="farmer-info">
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Phone:</span> ${farmer.phone_number}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Email:</span> ${farmer.email || 'N/A'}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Sub-County:</span> ${farmer.sub_county}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Soil Type:</span> ${farmer.soil_type}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Farm Size:</span> ${farmer.farm_size || 'N/A'} ha
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Budget:</span> KSh ${farmer.budget || '0'}
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-small btn-edit" onclick="openEditModal(${farmer.id})">Edit</button>
+                                <button class="btn-small btn-delete" onclick="deleteFarmer(${farmer.id})">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="loading"><p>No farmers found</p></div>';
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="loading"><p>Error: ${error.message}</p></div>`;
+            }
+        }
+
+        // Search farmers
+        async function searchFarmers() {
+            const term = document.getElementById('searchTerm').value;
+            if (!term) {
+                showAlert('directoryAlert', 'Please enter a search term', 'error');
+                return;
+            }
+
+            const container = document.getElementById('farmerListContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+
+            try {
+                const response = await fetch(`/api/farmers/search?q=${encodeURIComponent(term)}`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(farmer => `
+                        <div class="farmer-card">
+                            <div class="farmer-name">${farmer.first_name || ''} ${farmer.last_name || ''}</div>
+                            <div class="farmer-info">
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Phone:</span> ${farmer.phone_number}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Email:</span> ${farmer.email || 'N/A'}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Sub-County:</span> ${farmer.sub_county}
+                                </div>
+                                <div class="farmer-info-item">
+                                    <span class="farmer-info-label">Soil Type:</span> ${farmer.soil_type}
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-small btn-edit" onclick="openEditModal(${farmer.id})">Edit</button>
+                                <button class="btn-small btn-delete" onclick="deleteFarmer(${farmer.id})">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="loading"><p>No farmers found matching your search</p></div>';
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="loading"><p>Error: ${error.message}</p></div>`;
+            }
+        }
+
+        // Edit modal
+        let editingFarmerId = null;
+
+        async function openEditModal(farmerId) {
+            editingFarmerId = farmerId;
+            try {
+                const response = await fetch(`/api/farmers/${farmerId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const farmer = data.data;
+                    document.getElementById('editFirstName').value = farmer.first_name || '';
+                    document.getElementById('editLastName').value = farmer.last_name || '';
+                    document.getElementById('editEmail').value = farmer.email || '';
+                    document.getElementById('editSubCounty').value = farmer.sub_county || '';
+                    document.getElementById('editSoilType').value = farmer.soil_type || '';
+                    document.getElementById('editFarmSize').value = farmer.farm_size || '';
+                    document.getElementById('editWaterSource').value = farmer.water_source || '';
+                    document.getElementById('editBudget').value = farmer.budget || '';
+                    document.getElementById('editLanguage').value = farmer.preferred_language || 'english';
+                    document.getElementById('editModal').classList.add('active');
+                }
+            } catch (error) {
+                alert('Error loading farmer data: ' + error.message);
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+            editingFarmerId = null;
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                firstName: document.getElementById('editFirstName').value,
+                lastName: document.getElementById('editLastName').value,
+                email: document.getElementById('editEmail').value,
+                subCounty: document.getElementById('editSubCounty').value,
+                soilType: document.getElementById('editSoilType').value,
+                farmSize: parseFloat(document.getElementById('editFarmSize').value) || 0,
+                waterSource: document.getElementById('editWaterSource').value,
+                budget: parseFloat(document.getElementById('editBudget').value) || 0,
+                preferredLanguage: document.getElementById('editLanguage').value
+            };
+
+            try {
+                const response = await fetch(`/api/farmers/${editingFarmerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('statisticsAlert', '✅ Profile updated successfully', 'success');
+                    closeEditModal();
+                    loadAllFarmers();
+                } else {
+                    showAlert('statisticsAlert', '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showAlert('statisticsAlert', '❌ Error: ' + error.message, 'error');
+            }
+        });
+
+        // Delete farmer
+        async function deleteFarmer(farmerId) {
+            if (!confirm('Are you sure you want to delete this farmer profile?')) return;
+
+            try {
+                const response = await fetch(`/api/farmers/${farmerId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('directoryAlert', '✅ Farmer profile deleted', 'success');
+                    loadAllFarmers();
+                } else {
+                    showAlert('directoryAlert', '❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showAlert('directoryAlert', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/farmers/statistics');
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('statTotalFarmers').textContent = stats.totalFarmers;
+                    document.getElementById('statAvgFarmSize').textContent = stats.averageFarmSize.toFixed(1);
+                    document.getElementById('statAvgBudget').textContent = stats.averageBudget.toFixed(0);
+
+                    // Sub-county breakdown
+                    const subCountyHtml = stats.farmersBySubCounty.map(item => `
+                        <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                            <span style="font-weight: bold;">${item.sub_county}:</span> ${item.count} farmers
+                        </div>
+                    `).join('');
+                    document.getElementById('farmersBySubCounty').innerHTML = subCountyHtml;
+
+                    // Soil type breakdown
+                    const soilTypeHtml = stats.farmersBySoilType.map(item => `
+                        <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                            <span style="font-weight: bold;">${item.soil_type}:</span> ${item.count} farmers
+                        </div>
+                    `).join('');
+                    document.getElementById('farmersBySoilType').innerHTML = soilTypeHtml;
+                }
+            } catch (error) {
+                showAlert('statisticsAlert', 'Error loading statistics: ' + error.message, 'error');
+            }
+        }
+
+        // Load farmers on page load
+        window.addEventListener('load', () => {
+            console.log('Farmer Module loaded successfully');
+        });
+    </script>
+</body>
+</html>

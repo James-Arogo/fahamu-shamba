@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahamu Shamba - USSD Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e5631 0%, #2d7649 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 320px;
+            background: #e8e8e8;
+            border: 8px solid #333;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .phone-header {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            border-bottom: 2px solid #333;
+        }
+
+        .screen {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            min-height: 300px;
+            border: 2px solid #333;
+            font-size: 0.85em;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 350px;
+            word-wrap: break-word;
+        }
+
+        .screen-content {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+
+        .keypad {
+            background: #c0c0c0;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            border-top: 2px solid #999;
+        }
+
+        .key {
+            background: linear-gradient(145deg, #e0e0e0, #a0a0a0);
+            border: 1px solid #888;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-family: Arial, sans-serif;
+        }
+
+        .key:hover {
+            background: linear-gradient(145deg, #f0f0f0, #b0b0b0);
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .key:active {
+            background: linear-gradient(145deg, #a0a0a0, #808080);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .key-number {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .key-main {
+            font-size: 1.3em;
+        }
+
+        .key-letters {
+            font-size: 0.6em;
+            opacity: 0.7;
+        }
+
+        .key-wide {
+            grid-column: span 3;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+            padding: 10px;
+            background: #c0c0c0;
+            border-top: 2px solid #999;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            background: linear-gradient(145deg, #e0e0e0, #a0a0a0);
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #f0f0f0, #b0b0b0);
+        }
+
+        button:active {
+            background: linear-gradient(145deg, #a0a0a0, #808080);
+        }
+
+        .input-line {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #0f0;
+            color: #ff0;
+        }
+
+        .header-info {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .header-info h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div style="width: 100%; max-width: 400px;">
+        <div class="header-info">
+            <h1><img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo" style="width:58px;height:58px;object-fit:contain;border-radius:50%;background:#fff;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,0.22);border:2px solid rgba(255,255,255,0.85);vertical-align:middle;"> Fahamu Shamba</h1>
+            <p>USSD Simulator (*134*65#)</p>
+        </div>
+
+        <div class="phone-container">
+            <div class="phone-header">
+                🌳 Fahamu Shamba USSD
+            </div>
+
+            <div class="screen">
+                <div class="screen-content" id="screenContent">Dial *134*65# to start...</div>
+                <div class="input-line" id="inputLine" style="display: none;"></div>
+            </div>
+
+            <div class="keypad">
+                <div class="key key-number" onclick="pressKey('1')">
+                    <span class="key-main">1</span>
+                    <span class="key-letters"></span>
+                </div>
+                <div class="key key-number" onclick="pressKey('2')">
+                    <span class="key-main">2</span>
+                    <span class="key-letters">ABC</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('3')">
+                    <span class="key-main">3</span>
+                    <span class="key-letters">DEF</span>
+                </div>
+
+                <div class="key key-number" onclick="pressKey('4')">
+                    <span class="key-main">4</span>
+                    <span class="key-letters">GHI</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('5')">
+                    <span class="key-main">5</span>
+                    <span class="key-letters">JKL</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('6')">
+                    <span class="key-main">6</span>
+                    <span class="key-letters">MNO</span>
+                </div>
+
+                <div class="key key-number" onclick="pressKey('7')">
+                    <span class="key-main">7</span>
+                    <span class="key-letters">PQRS</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('8')">
+                    <span class="key-main">8</span>
+                    <span class="key-letters">TUV</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('9')">
+                    <span class="key-main">9</span>
+                    <span class="key-letters">WXYZ</span>
+                </div>
+
+                <div class="key key-number" onclick="pressKey('*')">
+                    <span class="key-main">*</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('0')">
+                    <span class="key-main">0</span>
+                    <span class="key-letters">SPACE</span>
+                </div>
+                <div class="key key-number" onclick="pressKey('#')">
+                    <span class="key-main">#</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button onclick="sendInput()">✓ Send</button>
+                <button onclick="clearInput()">C Clear</button>
+                <button onclick="restart()">↻ Reset</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Use:</h3>
+            <ol>
+                <li>Click "Reset" to start fresh or dial <strong>*134*65#</strong></li>
+                <li>Select a language: 1=English, 2=Swahili, 3=Dholuo</li>
+                <li>Choose service: 1=Crop advice, 2=Market prices, 3=Weather update, 4=About</li>
+                <li>For crop advice: select sub-county, soil type, and season</li>
+                <li>Click "Send" to continue at each menu step</li>
+            </ol>
+            <p style="margin-top: 10px; font-size: 0.85em;">
+                <strong>Demo Locations:</strong> Bondo, Ugunja, Yala, Gem, Alego<br>
+                <strong>Demo Soil Types:</strong> Sandy, Clay, Loam<br>
+                <strong>Demo Seasons:</strong> Long Rains, Short Rains, Dry
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let sessionState = 'initial';
+        let sessionData = {
+            sessionId: 'sim_' + Date.now(),
+            phoneNumber: '254712345678',
+            text: '',
+            serviceCode: '134*65#'
+        };
+
+        const stateTransitions = {
+            'initial': { prompt: 'Dial *134*65# to continue...', next: 'language' },
+            'language': { prompt: 'Welcome to Fahamu Shamba!\n1. English\n2. Kiswahili\n3. Dholuo', next: 'menu' },
+            'menu': { prompt: 'Select option:\n1. Get crop advice\n2. About', next: 'advice_type' },
+            'advice_type': { prompt: 'Select sub-county:\n1. Bondo\n2. Ugunja\n3. Yala\n4. Gem\n5. Alego', next: 'subcounty' },
+            'subcounty': { prompt: 'Select soil type:\n1. Sandy\n2. Clay\n3. Loam', next: 'soil' },
+            'soil': { prompt: 'Select season:\n1. Long Rains\n2. Short Rains\n3. Dry', next: 'season' },
+            'season': { prompt: 'Processing...', next: 'result' },
+            'result': { prompt: '', next: 'restart_prompt' },
+            'restart_prompt': { prompt: 'Dial *134*65# again to get another recommendation', next: 'initial' }
+        };
+
+        function updateDisplay() {
+            const inputLine = document.getElementById('inputLine');
+            if (sessionData.text) {
+                inputLine.style.display = 'block';
+                inputLine.textContent = '> ' + sessionData.text;
+            } else {
+                inputLine.style.display = 'none';
+            }
+        }
+
+        function pressKey(key) {
+            if (key === '*' && sessionData.text === '') {
+                sessionData.text = '*134*65#';
+            } else if (key === '#') {
+                sendInput();
+                return;
+            } else {
+                sessionData.text += key;
+            }
+            updateDisplay();
+        }
+
+        async function sendInput() {
+             if (!sessionData.text) return;
+
+             if (sessionData.text === '*134*65#') {
+                 sessionState = 'language';
+                 sessionData.text = '';
+                 updateDisplay();
+                 displayResponse();
+                 return;
+             }
+
+             try {
+                 const currentInput = sessionData.text;
+                 
+                 const response = await fetch('/api/ussd', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify(sessionData)
+                 });
+
+                 const data = await response.text();
+                 const lines = data.split('\n');
+                 const responseType = lines[0].substring(0, 3);
+                 const responseText = lines[0].substring(3).trim() + (lines.length > 1 ? '\n' + lines.slice(1).join('\n') : '');
+
+                 document.getElementById('screenContent').textContent = responseText;
+                 
+                 // Prepare for next input: keep accumulated path and append current selection
+                 const parts = sessionData.text.split('*');
+                 if (parts.length === 1) {
+                     // First input was just a single digit
+                     sessionData.text = parts[0] + '*';
+                 } else {
+                     // Already have accumulated path, just add the separator
+                     sessionData.text = sessionData.text + '*';
+                 }
+                 
+                 if (responseType === 'END') {
+                     sessionState = 'restart_prompt';
+                     sessionData.text = '';
+                 }
+
+                 updateDisplay();
+             } catch (error) {
+                 document.getElementById('screenContent').textContent = 'Error: ' + error.message;
+                 sessionData.text = '';
+                 updateDisplay();
+             }
+         }
+
+        function displayResponse() {
+            const state = stateTransitions[sessionState];
+            if (state) {
+                document.getElementById('screenContent').textContent = state.prompt;
+            }
+        }
+
+        function clearInput() {
+            sessionData.text = '';
+            updateDisplay();
+        }
+
+        function restart() {
+            sessionState = 'initial';
+            sessionData.text = '';
+            sessionData.sessionId = 'sim_' + Date.now();
+            updateDisplay();
+            document.getElementById('screenContent').textContent = stateTransitions['initial'].prompt;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            displayResponse();
+            updateDisplay();
+        });
+
+        // Allow keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                pressKey(e.key);
+            } else if (e.key === '*') {
+                pressKey('*');
+            } else if (e.key === '#' || e.key === 'Enter') {
+                sendInput();
+            } else if (e.key === 'Backspace') {
+                sessionData.text = sessionData.text.slice(0, -1);
+                updateDisplay();
+            } else if (e.key === 'Escape') {
+                restart();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* Global responsive helpers for all dashboards */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+@media (max-width: 1024px) {
+  [class*="grid"],
+  [class*="layout"],
+  [class*="columns"],
+  [class*="stats"],
+  [class*="cards"],
+  [class*="panels"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sidebar,
+  .aside,
+  nav,
+  .side-panel {
+    width: 100% !important;
+    position: static !important;
+  }
+
+  .row,
+  .toolbar,
+  .actions,
+  .filters,
+  .header-actions,
+  .nav-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    width: 100%;
+  }
+
+  .card,
+  .panel,
+  .section {
+    padding: 12px !important;
+  }
+}

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historical Data Upload - Fahamu Shamba</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #1f7a42;
+      --primary-dark: #166534;
+      --accent: #ef8a22;
+      --bg: #f3f6f4;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --ok: #166534;
+      --err: #991b1b;
+      --warn: #92400e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e6f3ea, #fdf4e8);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      padding: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: var(--primary-dark);
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .btn-link {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { filter: brightness(0.92); }
+
+    .btn-ghost {
+      background: #f3f4f6;
+      border: 1px solid var(--line);
+      color: #374151;
+    }
+
+    .dropzone {
+      border: 2px dashed #9ca3af;
+      border-radius: 10px;
+      padding: 22px;
+      text-align: center;
+      background: #f9fafb;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .dropzone.dragover {
+      border-color: var(--primary);
+      background: #eef9f1;
+    }
+
+    input[type="file"] { display: none; }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .helper {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .alert {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border-left: 4px solid transparent;
+      font-size: 13px;
+    }
+
+    .alert.show { display: block; }
+    .alert.ok { background: #ecfdf3; color: var(--ok); border-color: #16a34a; }
+    .alert.err { background: #fef2f2; color: var(--err); border-color: #ef4444; }
+    .alert.warn { background: #fffbeb; color: var(--warn); border-color: #f59e0b; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .stat .label { font-size: 12px; color: var(--muted); }
+    .stat .value { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: #f3f4f6; }
+
+    .scroll {
+      max-height: 320px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    }
+  </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div>
+          <h1>Historical Dataset Uploader</h1>
+          <p class="sub">Upload CSV observations for sub-county soil, rainfall, yield, pest, market, and input-cost history.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn-link btn-ghost" href="/admin">Back to Admin</a>
+          <button class="btn-accent" type="button" id="downloadTemplateBtn">Download CSV Template</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="dropzone" class="dropzone">
+        <p><strong>Drop CSV file here</strong> or click to browse</p>
+        <p class="helper">Expected headers:
+          <code>subCounty,season,soilType,crop,observationDate,soilPH,nitrogen,phosphorus,potassium,organicMatter,rainfallMm,yieldTonsPerHa,pestIncidents,marketPriceKshPerKg,inputCostKsh,source</code>
+        </p>
+      </div>
+      <input id="csvFile" type="file" accept=".csv,text/csv">
+
+      <label for="csvText" style="display:block; margin: 10px 0 6px; font-weight: 600;">CSV Text</label>
+      <textarea id="csvText" placeholder="Paste CSV data here..."></textarea>
+
+      <div class="btn-row" style="margin-top: 12px;">
+        <button class="btn-primary" type="button" id="parseBtn">Parse CSV</button>
+        <button class="btn-primary" type="button" id="uploadBtn" disabled>Upload to /api/historical-data/ingest-bulk</button>
+        <button class="btn-ghost" type="button" id="clearBtn">Clear</button>
+      </div>
+
+      <div id="alertBox" class="alert" style="margin-top: 12px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><div class="label">Parsed Rows</div><div class="value" id="parsedRows">0</div></div>
+        <div class="stat"><div class="label">Ready Rows</div><div class="value" id="readyRows">0</div></div>
+        <div class="stat"><div class="label">Rejected Rows</div><div class="value" id="rejectedRows">0</div></div>
+        <div class="stat"><div class="label">Uploaded</div><div class="value" id="uploadedRows">0</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Preview</h3>
+      <div id="previewWrap" class="scroll"></div>
+    </div>
+
+    <div class="card">
+      <h3>Upload Result</h3>
+      <div id="resultWrap" class="scroll"></div>
+    </div>
+  </div>
+
+  <script>
+    const csvTextEl = document.getElementById('csvText');
+    const csvFileEl = document.getElementById('csvFile');
+    const parseBtn = document.getElementById('parseBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const alertBox = document.getElementById('alertBox');
+    const previewWrap = document.getElementById('previewWrap');
+    const resultWrap = document.getElementById('resultWrap');
+    const dropzone = document.getElementById('dropzone');
+
+    const parsedRowsEl = document.getElementById('parsedRows');
+    const readyRowsEl = document.getElementById('readyRows');
+    const rejectedRowsEl = document.getElementById('rejectedRows');
+    const uploadedRowsEl = document.getElementById('uploadedRows');
+
+    let parsedRows = [];
+    let rejectedRows = [];
+
+    const requiredHeaders = [
+      'subCounty', 'season', 'soilType', 'crop', 'observationDate', 'soilPH',
+      'rainfallMm', 'yieldTonsPerHa', 'pestIncidents', 'marketPriceKshPerKg', 'inputCostKsh'
+    ];
+
+    function showAlert(message, type = 'ok') {
+      alertBox.textContent = message;
+      alertBox.className = `alert show ${type}`;
+    }
+
+    function setStats({ parsed = 0, ready = 0, rejected = 0, uploaded = 0 }) {
+      parsedRowsEl.textContent = parsed;
+      readyRowsEl.textContent = ready;
+      rejectedRowsEl.textContent = rejected;
+      uploadedRowsEl.textContent = uploaded;
+    }
+
+    function parseCsvLine(line) {
+      const values = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i += 1) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i += 1;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          values.push(current.trim());
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      values.push(current.trim());
+      return values;
+    }
+
+    function parseCsv(text) {
+      const lines = text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+      if (lines.length < 2) {
+        return { rows: [], rejects: [{ row: 0, reason: 'CSV needs header and at least one data row' }] };
+      }
+
+      const header = parseCsvLine(lines[0]);
+      const rows = [];
+      const rejects = [];
+
+      const missing = requiredHeaders.filter((field) => !header.includes(field));
+      if (missing.length > 0) {
+        return {
+          rows: [],
+          rejects: [{ row: 1, reason: `Missing required header(s): ${missing.join(', ')}` }]
+        };
+      }
+
+      for (let i = 1; i < lines.length; i += 1) {
+        const cols = parseCsvLine(lines[i]);
+        const rowNumber = i + 1;
+
+        if (cols.length !== header.length) {
+          rejects.push({ row: rowNumber, reason: `Column count mismatch. Expected ${header.length}, got ${cols.length}` });
+          continue;
+        }
+
+        const rowObj = {};
+        header.forEach((key, idx) => {
+          rowObj[key] = cols[idx];
+        });
+
+        const requiredMissing = requiredHeaders.filter((field) => !rowObj[field] || rowObj[field] === '');
+        if (requiredMissing.length > 0) {
+          rejects.push({ row: rowNumber, reason: `Missing required value(s): ${requiredMissing.join(', ')}` });
+          continue;
+        }
+
+        rows.push(rowObj);
+      }
+
+      return { rows, rejects };
+    }
+
+    function renderTable(target, rows, includeReason = false) {
+      if (!rows || rows.length === 0) {
+        target.innerHTML = '<p style="padding:10px; color:#6b7280;">No data</p>';
+        return;
+      }
+
+      const cols = Object.keys(rows[0]);
+      const header = cols.concat(includeReason ? ['reason'] : []);
+
+      const thead = `<thead><tr>${header.map((h) => `<th>${h}</th>`).join('')}</tr></thead>`;
+      const tbody = `<tbody>${rows.map((row) => {
+        const cells = cols.map((c) => `<td>${String(row[c] ?? '')}</td>`).join('');
+        const reasonCell = includeReason ? `<td>${String(row.reason || '')}</td>` : '';
+        return `<tr>${cells}${reasonCell}</tr>`;
+      }).join('')}</tbody>`;
+
+      target.innerHTML = `<table>${thead}${tbody}</table>`;
+    }
+
+    function resetState() {
+      parsedRows = [];
+      rejectedRows = [];
+      csvTextEl.value = '';
+      csvFileEl.value = '';
+      previewWrap.innerHTML = '';
+      resultWrap.innerHTML = '';
+      uploadBtn.disabled = true;
+      alertBox.className = 'alert';
+      setStats({ parsed: 0, ready: 0, rejected: 0, uploaded: 0 });
+    }
+
+    parseBtn.addEventListener('click', () => {
+      const raw = csvTextEl.value.trim();
+      if (!raw) {
+        showAlert('Please upload or paste CSV data first.', 'warn');
+        return;
+      }
+
+      const { rows, rejects } = parseCsv(raw);
+      parsedRows = rows;
+      rejectedRows = rejects;
+
+      setStats({
+        parsed: rows.length + rejects.length,
+        ready: rows.length,
+        rejected: rejects.length,
+        uploaded: 0
+      });
+
+      renderTable(previewWrap, rows);
+
+      if (rejects.length > 0) {
+        renderTable(resultWrap, rejects, true);
+        showAlert(`Parsed with ${rejects.length} rejected row(s). Fix CSV and re-parse before upload.`, 'warn');
+      } else {
+        resultWrap.innerHTML = '<p style="padding:10px; color:#166534;">No parse errors.</p>';
+        showAlert(`Parsed ${rows.length} row(s) successfully. Ready to upload.`, 'ok');
+      }
+
+      uploadBtn.disabled = rows.length === 0;
+    });
+
+    uploadBtn.addEventListener('click', async () => {
+      if (parsedRows.length === 0) {
+        showAlert('No parsed rows to upload.', 'warn');
+        return;
+      }
+
+      try {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+
+        const response = await fetch('/api/historical-data/ingest-bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ observations: parsedRows })
+        });
+
+        const result = await response.json();
+        const summary = result.summary || { inserted: 0, rejected: 0, total: parsedRows.length };
+
+        setStats({
+          parsed: summary.total,
+          ready: summary.inserted,
+          rejected: summary.rejected,
+          uploaded: summary.inserted
+        });
+
+        if (Array.isArray(result.results) && result.results.length > 0) {
+          renderTable(
+            resultWrap,
+            result.results.map((item) => ({
+              index: item.index,
+              success: item.success,
+              id: item.id || '',
+              duplicateId: item.duplicateId || '',
+              message: item.message || '',
+              errors: item.errors ? item.errors.join('; ') : ''
+            }))
+          );
+        } else {
+          resultWrap.innerHTML = `<p style="padding:10px;">${result.message || 'Upload completed.'}</p>`;
+        }
+
+        if (response.ok || response.status === 207) {
+          const kind = summary.rejected > 0 ? 'warn' : 'ok';
+          showAlert(result.message || `Upload complete. Inserted ${summary.inserted}.`, kind);
+        } else {
+          showAlert(result.message || 'Upload failed', 'err');
+        }
+      } catch (error) {
+        showAlert(`Upload failed: ${error.message}`, 'err');
+      } finally {
+        uploadBtn.disabled = parsedRows.length === 0;
+        uploadBtn.textContent = 'Upload to /api/historical-data/ingest-bulk';
+      }
+    });
+
+    clearBtn.addEventListener('click', resetState);
+
+    csvFileEl.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      csvTextEl.value = text;
+      showAlert(`Loaded ${file.name}. Click "Parse CSV".`, 'ok');
+    });
+
+    dropzone.addEventListener('click', () => csvFileEl.click());
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+    dropzone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (!file) return;
+      csvFileEl.files = e.dataTransfer.files;
+      const text = await file.text();
+      csvTextEl.value = text;
+      showAlert(`Loaded ${file.name}. Click "Parse CSV".`, 'ok');
+    });
+
+    document.getElementById('downloadTemplateBtn').addEventListener('click', () => {
+      const sample = [
+        'subCounty,season,soilType,crop,observationDate,soilPH,nitrogen,phosphorus,potassium,organicMatter,rainfallMm,yieldTonsPerHa,pestIncidents,marketPriceKshPerKg,inputCostKsh,source',
+        'bondo,long_rains,loam,Maize,2025-03-20,6.4,1.6,12,150,3.1,780,3.6,2,58,24500,county_agri_office',
+        'ugunja,short_rains,sandy,Beans,2025-10-12,6.1,1.1,9,120,2.2,420,1.9,4,92,16800,farmer_coop'
+      ].join('\n');
+
+      const blob = new Blob([sample], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'historical_observations_template.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    resetState();
+  </script>
+</body>
+</html>

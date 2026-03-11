@@ -1,0 +1,2 @@
+farmer_id,sub_county,season,crop,planting_date,harvest_date,farm_size_ha,yield_ton_per_ha,input_cost_ksh,revenue_ksh,profit_ksh,source
+FR-MM4NGQTX-ZYWB3D,alego,long_rains,beans,2025-03-10,2025-07-28,2.0,2.3,22000,54000,32000,farmer_reported

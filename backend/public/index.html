@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahamu Shamba | Smart Agriculture Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f3f2ec;
+            --surface: #ffffff;
+            --ink: #1f2b24;
+            --muted: #5b6d62;
+            --brand: #1f6a45;
+            --brand-deep: #155136;
+            --line: #d8dfd2;
+            --radius-lg: 24px;
+            --radius-md: 14px;
+            --shadow: 0 18px 38px rgba(21, 45, 34, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            font-family: "Manrope", sans-serif;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            background:
+                radial-gradient(circle at 86% -20%, rgba(31, 106, 69, 0.12), transparent 38%),
+                radial-gradient(circle at 0% 8%, rgba(75, 126, 91, 0.08), transparent 35%),
+                var(--bg);
+        }
+
+        .page {
+            width: min(1240px, 95vw);
+            margin: 0 auto;
+            padding: 16px 0 56px;
+        }
+
+        .topbar {
+            background: #f4f3ed;
+            border: 1px solid #d9ded4;
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            position: sticky;
+            top: 8px;
+            z-index: 20;
+            backdrop-filter: blur(3px);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: 0.01em;
+        }
+
+        .brand-mark {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #fff;
+            border: 2px solid rgba(44, 87, 61, 0.22);
+            box-shadow: 0 8px 20px rgba(16, 46, 31, 0.14);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 6px;
+            border-radius: 50%;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 11px 20px;
+            min-height: 44px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            color: #466456;
+            border-color: #d6ddd2;
+            background: rgba(255, 255, 255, 0.86);
+        }
+
+        .btn-ghost:hover {
+            background: #fff;
+            box-shadow: 0 8px 16px rgba(42, 73, 56, 0.12);
+        }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(140deg, var(--brand), var(--brand-deep));
+            box-shadow: 0 10px 18px rgba(18, 79, 52, 0.3);
+        }
+
+        .hero {
+            margin-top: 12px;
+            min-height: clamp(520px, 70vh, 660px);
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(180deg, rgba(25, 54, 39, 0.6), rgba(13, 34, 24, 0.72)),
+                url('/assets/hero-smart-agri.png');
+            background-size: cover;
+            background-position: center;
+            transform: scale(1);
+            transition: transform 0.65s ease;
+        }
+
+        .hero:hover::before {
+            transform: scale(1.03);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 930px;
+            color: #edf8ef;
+        }
+
+        .eyebrow {
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #cde7d4;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(2.6rem, 7vw, 5.2rem);
+            line-height: 0.98;
+            color: #f3f9f2;
+            text-wrap: balance;
+        }
+
+        .hero p {
+            margin: 22px auto 0;
+            max-width: 840px;
+            font-size: clamp(1rem, 2vw, 1.06rem);
+            line-height: 1.6;
+            color: rgba(236, 247, 237, 0.92);
+        }
+
+        .hero-cta {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-light {
+            background: #f6fff7;
+            color: var(--brand-deep);
+            box-shadow: 0 10px 20px rgba(20, 45, 33, 0.25);
+        }
+
+        .btn-outline-light {
+            border-color: rgba(242, 252, 245, 0.6);
+            color: #f5fff8;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .hero-panel {
+            margin: 24px auto 0;
+            width: min(760px, 92%);
+            border-radius: 16px;
+            border: 1px solid rgba(225, 244, 231, 0.35);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            padding: 16px;
+        }
+
+        .hero-panel h3 {
+            margin: 0 0 12px;
+            font-size: 1.03rem;
+            color: #f5fff8;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .kpi {
+            border: 1px solid rgba(226, 245, 232, 0.28);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 8px;
+        }
+
+        .kpi strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: #f3fff5;
+        }
+
+        .kpi span {
+            font-size: 0.8rem;
+            color: #d7ecd9;
+        }
+
+        .section {
+            margin-top: 18px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: 0 10px 24px rgba(18, 42, 31, 0.08);
+        }
+
+        .section h2 {
+            margin: 0;
+            font-family: "Playfair Display", serif;
+            font-size: clamp(1.8rem, 4vw, 2.45rem);
+            line-height: 1.1;
+            color: #1d3527;
+        }
+
+        .section .subtitle {
+            margin-top: 9px;
+            color: var(--muted);
+            max-width: 66ch;
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .cards {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid #d8e2d8;
+            border-radius: var(--radius-md);
+            background: linear-gradient(180deg, #ffffff, #f7fbf6);
+            padding: 18px;
+            box-shadow: 0 10px 18px rgba(19, 45, 31, 0.07);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #9ac2a5;
+            box-shadow: 0 14px 24px rgba(20, 52, 36, 0.14);
+        }
+
+        .card strong {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 1.02rem;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 0.93rem;
+        }
+
+        .flow {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .step {
+            border-radius: 12px;
+            border: 1px dashed #bfd0bf;
+            background: #f9fcf8;
+            padding: 14px 12px;
+            min-height: 116px;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-2px);
+            border-color: #8fb291;
+            background: #f2faf0;
+        }
+
+        .step b {
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            color: #2f6b48;
+        }
+
+        .step h4 {
+            margin: 9px 0 6px;
+            font-size: 0.98rem;
+            color: #1f3527;
+        }
+
+        .step p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .cta {
+            margin-top: 20px;
+            border-radius: 18px;
+            border: 1px solid #dde7d9;
+            background: linear-gradient(120deg, #edf7ea, #f8f3de);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .cta p {
+            margin: 0;
+            color: #3c5948;
+            font-weight: 600;
+        }
+
+        @media (max-width: 980px) {
+            .topbar {
+                position: static;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .flow {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                width: 93vw;
+                padding-top: 10px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 12px;
+            }
+
+            .brand {
+                font-size: 1.55rem;
+            }
+
+            .brand-mark {
+                width: 58px;
+                height: 58px;
+            }
+
+            .top-actions {
+                width: 100%;
+            }
+
+            .top-actions .btn {
+                flex: 1 1 100%;
+            }
+
+            .hero {
+                min-height: 560px;
+                padding: 34px 14px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2.2rem, 10vw, 3rem);
+            }
+
+            .hero-cta .btn {
+                width: 100%;
+            }
+
+            .section {
+                padding: 20px 16px;
+            }
+
+            .cards,
+            .flow,
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <main class="page">
+        <div class="topbar">
+            <div class="brand">
+                <span class="brand-mark">
+                    <img src="/assets/logo-fahamu-shamba.png" alt="Fahamu Shamba logo">
+                </span>
+                <span>Fahamu Shamba</span>
+            </div>
+            <div class="top-actions">
+                <a href="/dashboard" class="btn btn-ghost">Farm Insights</a>
+                <a href="/admin" class="btn btn-ghost">Admin</a>
+                <a href="/farmer-registration?tab=login" class="btn btn-primary">Farmer Portal</a>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="eyebrow">Smart farming for Siaya County</div>
+                <h1>Predict smarter. Farm better. Grow with confidence.</h1>
+                <p>
+                    Fahamu Shamba helps farmers make better crop decisions using soil, weather, budget, and market data.
+                    From registration to prediction and recommendations, everything is in one workflow.
+                </p>
+                <div class="hero-cta">
+                    <a href="/farmer-registration?tab=login" class="btn btn-light">Login as Farmer</a>
+                    <a href="/farmer-registration" class="btn btn-outline-light">Create Account</a>
+                </div>
+                <aside class="hero-panel">
+                    <h3>Platform Highlights</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi">
+                            <strong>Real-time</strong>
+                            <span>Weather and market insights</span>
+                        </div>
+                        <div class="kpi">
+                            <strong>Localized</strong>
+                            <span>Sub-county specific guidance</span>
+                        </div>
+                        <div class="kpi">
+                            <strong>Actionable</strong>
+                            <span>Clear next-step recommendations</span>
+                        </div>
+                        <div class="kpi">
+                            <strong>Connected</strong>
+                            <span>Farmer, analytics, and admin tools</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>What You Can Do</h2>
+            <p class="subtitle">
+                The platform is built for farmers and coordinators to work from real data, not guesswork.
+            </p>
+            <div class="cards">
+                <article class="card">
+                    <strong>Farmer Registration & Login</strong>
+                    <p>Create individual or group profiles, upload photo details, and access your personal farm dashboard.</p>
+                </article>
+                <article class="card">
+                    <strong>Crop Predictions</strong>
+                    <p>Run prediction workflows based on local conditions and get confidence-backed crop recommendations.</p>
+                </article>
+                <article class="card">
+                    <strong>Data-Driven Guidance</strong>
+                    <p>Use weather, soil, and market analysis tabs to guide planning, inputs, and seasonal decisions.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>How It Works</h2>
+            <p class="subtitle">A clean path from onboarding to action in four steps.</p>
+            <div class="flow">
+                <div class="step">
+                    <b>STEP 01</b>
+                    <h4>Register</h4>
+                    <p>Set up a farmer profile with location and farm details.</p>
+                </div>
+                <div class="step">
+                    <b>STEP 02</b>
+                    <h4>Login</h4>
+                    <p>Access your portal securely and recover password when needed.</p>
+                </div>
+                <div class="step">
+                    <b>STEP 03</b>
+                    <h4>Predict</h4>
+                    <p>Run crop prediction using your soil, season, and resource context.</p>
+                </div>
+                <div class="step">
+                    <b>STEP 04</b>
+                    <h4>Act</h4>
+                    <p>Apply the recommendations and monitor outcomes in your dashboard.</p>
+                </div>
+            </div>
+            <div class="cta">
+                <p>Ready to enter the portal and continue with your farm journey?</p>
+                <div class="top-actions">
+                    <a href="/farmer-registration?tab=login" class="btn btn-primary">Open Farmer Login</a>
+                    <a href="/farmer-dashboard" class="btn btn-ghost">Go to Farmer Dashboard</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
