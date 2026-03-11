@@ -2831,8 +2831,20 @@ const cropRules = [
 // ==================== ROUTES ====================
 
 // Serve the landing page
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.get(['/', '/index.html'], (req, res) => {
+  // Prefer the repository root landing page if present (matches local "static" look).
+  const repoRootIndex = path.resolve(__dirname, '..', 'index.html');
+  const backendIndex = path.join(__dirname, 'public', 'index.html');
+  res.sendFile(fs.existsSync(repoRootIndex) ? repoRootIndex : backendIndex);
+});
+
+// Keep backward-compatible access to the repo-root dashboard HTML if it exists.
+app.get('/Dashboard.html', (req, res) => {
+  const repoRootDashboard = path.resolve(__dirname, '..', 'Dashboard.html');
+  if (!fs.existsSync(repoRootDashboard)) {
+    return res.redirect(302, '/dashboard');
+  }
+  res.sendFile(repoRootDashboard);
 });
 
 app.get('/farmer-dashboard', (req, res) => {
