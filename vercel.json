@@ -1,6 +1,18 @@
 {
   "version": 2,
-  "buildCommand": "npm install --prefix backend",
   "installCommand": "npm install --prefix backend",
-  "devCommand": "npm run dev --prefix backend"
+  "buildCommand": "npm install --prefix backend",
+  "devCommand": "npm run dev --prefix backend",
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
+    }
+  ]
 }
