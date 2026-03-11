@@ -381,6 +381,19 @@ app.get('/monitoring-dashboard', (req, res) => {
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+// Ensure database is initialized on Vercel (lazy init)
+app.use(async (req, res, next) => {
+  if (IS_VERCEL && !dbAsync) {
+    try {
+      await ensureDbInitialized();
+    } catch (err) {
+      console.error('❌ Database initialization failed:', err);
+      return res.status(503).json({ error: 'Service unavailable: database not ready', code: 'DB_INIT_FAILED' });
+    }
+  }
+  next();
+});
+
 // Request context + structured request logs
 app.use((req, res, next) => {
   req.requestId = crypto.randomUUID();
@@ -549,7 +562,23 @@ async function initializeDatabaseConnection() {
   });
 }
 
-await initializeDatabaseConnection();
+// For Vercel: Lazy initialize database on first request
+let dbInitPromise = null;
+
+async function ensureDbInitialized() {
+  if (dbAsync) return; // Already initialized
+  if (dbInitPromise) return dbInitPromise; // Already initializing
+  
+  dbInitPromise = initializeDatabaseConnection();
+  await dbInitPromise;
+}
+
+// Initialize immediately in local/development, lazily on Vercel
+if (!IS_VERCEL) {
+  await initializeDatabaseConnection();
+} else {
+  console.log('⏳ Vercel mode: Database will initialize on first request');
+}
 
 function configureSQLiteForScale(onReady) {
   db.serialize(() => {
@@ -4786,6 +4815,16 @@ app.get('/api/test', (req, res) => {
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
   try {
+    // Quick health check - don't wait for DB on Vercel
+    if (IS_VERCEL && !dbAsync) {
+      return res.json({
+        success: true,
+        status: 'Initializing',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+      });
+    }
+    
     await dbAsync.get('SELECT 1 as test');
     res.json({
       success: true,
