@@ -1,25 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd backend && npm install --omit=dev",
-  "devCommand": "cd backend && npm run dev",
-  "installCommand": "cd backend && npm install",
-  "builds": [
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "nodeVersion": "18.x"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "backend/server.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "buildCommand": "npm install --prefix backend",
+  "installCommand": "npm install --prefix backend",
+  "devCommand": "npm run dev --prefix backend"
 }
